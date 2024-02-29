@@ -22,6 +22,7 @@ const App = () => {
 const PageRender = () => {
   const routers = RouterScope();
   const ROUTER_SCOPE = useRoutes(routers);
+  console.log('test git.config')
 
   return ROUTER_SCOPE;
 };
