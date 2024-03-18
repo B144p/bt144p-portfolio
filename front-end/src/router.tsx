@@ -1,8 +1,5 @@
-import { lazy, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { lazy } from "react";
 import { RouteObject } from "react-router";
-import { IStore } from "./app/store";
-import { selectedProject } from "./slices/project/project.slice";
 
 const BaseLayout = lazy(() => import("./layouts/BaseLayout"));
 // const SelectProject = lazy(() => import("./views/app/SelectProject"));

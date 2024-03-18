@@ -9,7 +9,7 @@ type Props = {
 export const useWindowWidth = () => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   useEffect(() => {
-    let resizeTimer: number;
+    let resizeTimer: NodeJS.Timeout;
     const handleResize = () => {
       // avoid excessive re-renders
       clearTimeout(resizeTimer);

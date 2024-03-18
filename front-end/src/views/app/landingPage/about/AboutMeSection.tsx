@@ -1,11 +1,9 @@
-import { BugFilled } from "@ant-design/icons";
 import { Col, Divider, Row, Timeline } from "antd";
 import { FC } from "react";
 import { styled } from "styled-components";
 import BreakpointComp from "../../../../components/BreakpointComp";
 import { breakpoints } from "../../../../utils/breakpoint";
 import { colors } from "../../../../utils/colors";
-import { DividerStyled } from "../LandingPage";
 import reactLogo from "../../../../assets/react.svg";
 
 type Props = {};
