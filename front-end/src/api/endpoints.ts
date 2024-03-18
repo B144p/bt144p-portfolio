@@ -1,0 +1,11 @@
+// WakaTime
+export const WAKA_SHARE_ID = import.meta.env.VITE_WAKATIME_SHARE_ID
+export const WAKA_SHARE_ACTIVITY_PATH = import.meta.env.VITE_WAKA_SHARE_ACTIVITY_PATH
+export const WAKA_SHARE_LANGUAGES_PATH = import.meta.env.VITE_WAKA_SHARE_LANGUAGES_PATH
+export const WAKA_SHARE_OS_PATH = import.meta.env.VITE_WAKA_SHARE_OS_PATH
+
+export const WAKA_HOST = `https://wakatime.com/`
+export const WAKA_SHARE_URL = `${WAKA_HOST}share/${WAKA_SHARE_ID}/`
+export const WAKA_SHARE_ACTIVITY_URL = `${WAKA_SHARE_URL}${WAKA_SHARE_ACTIVITY_PATH}`
+export const WAKA_SHARE_LANGUAGES_URL = `${WAKA_SHARE_URL}${WAKA_SHARE_LANGUAGES_PATH}`
+export const WAKA_SHARE_OS_URL = `${WAKA_SHARE_URL}${WAKA_SHARE_OS_PATH}`

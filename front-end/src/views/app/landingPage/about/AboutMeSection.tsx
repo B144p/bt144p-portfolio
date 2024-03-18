@@ -103,11 +103,11 @@ const AboutMeSection: FC<Props> = () => {
                       <Col span={20}>
                         <h2>
                           Surawittayakarn School
-                          <h3>
+                          <div>
                             <ul className="detail">
                               <li>Grade 7-12</li>
                             </ul>
-                          </h3>
+                          </div>
                         </h2>
                       </Col>
                     </Row>
@@ -126,12 +126,12 @@ const AboutMeSection: FC<Props> = () => {
                       <Col span={20}>
                         <h2>
                           King Mongkut's Institute of Technology Ladkrabang
-                          <h3>
+                          <div>
                             <ul className="detail">
                               <li>Bachelor of Control Engineering</li>
                               <li>3rd Class Honors in Bachelor's</li>
                             </ul>
-                          </h3>
+                          </div>
                         </h2>
                       </Col>
                     </Row>
@@ -201,7 +201,7 @@ const AboutMeSection: FC<Props> = () => {
                                 <li>
                                   Work closely with Product Owners and UX/UI
                                   Designer to reiterate design to launch quickly
-                                  and respond to users' feedbacks.
+                                  and respond to users feedbacks.
                                 </li>
                               </ul>
                             </li>

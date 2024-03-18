@@ -22,7 +22,6 @@ const App = () => {
 const PageRender = () => {
   const routers = RouterScope();
   const ROUTER_SCOPE = useRoutes(routers);
-  console.log('test: change file name ssh-key')
 
   return ROUTER_SCOPE;
 };

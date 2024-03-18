@@ -1,9 +1,16 @@
 import { Col, Progress, Row } from "antd";
-import { FC, useEffect, useRef, useState } from "react";
+import axios from "axios";
 import ReactEChart, { EChartsOption } from "echarts-for-react";
-import { numberFloatFormat } from "../../../../utils/functions";
-import { colors } from "../../../../utils/colors";
+import { FC, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
+import {
+  WAKA_SHARE_ACTIVITY_URL,
+  WAKA_SHARE_LANGUAGES_URL,
+  WAKA_SHARE_OS_URL,
+} from "../../../../api/endpoints";
+import { IWakaActivitySource, IWakaLanguageSource, IWakaOsSource } from "../../../../slices/wakatime/wakatime.model";
+import { colors } from "../../../../utils/colors";
+import { numberFloatFormat } from "../../../../utils/functions";
 
 type Props = {};
 
@@ -142,98 +149,73 @@ const configPie = {
   ],
 };
 
-const langMockup = {
-  time_total: {
-    total_seconds: 720540.018522,
-    hours: 200,
-    minutes: 9,
-  },
-  language_stats: [
-    { name: "TypeScript", value: 172.3, percent: 93.34 },
-    { name: "Other", value: 5.1, percent: 2.73 },
-    { name: "JSON", value: 3.1, percent: 1.66 },
-    { name: "Python", value: 2.5, percent: 1.34 },
-    { name: "YAML", value: 2.3, percent: 1.23 },
-    { name: "Bash", value: 1.3, percent: 0.7 },
-  ],
-};
-
-const OSMockup = [
-  {
-    total_seconds: 502701.018522,
-    name: "Windows",
-    percent: 65.2,
-    digital: "139:38",
-    decimal: 139.63,
-    text: "139 hrs 38 mins",
-    hours: 139,
-    minutes: 38,
-  },
-  {
-    total_seconds: 268363.067278,
-    name: "Linux",
-    percent: 34.8,
-    digital: "74:32",
-    decimal: 74.53,
-    text: "74 hrs 32 mins",
-    hours: 74,
-    minutes: 32,
-  },
-];
-
 const StatsSection: FC<Props> = () => {
   const radarLangRef = useRef(null);
   const pieOSRef = useRef(null);
   const [radarOptions, setRadarOptions] = useState<EChartsOption>(configRadar);
   const [pieOptions, setPieOptions] = useState<EChartsOption>(configPie);
+  const [wakaOsSource, setWakaOsSource] = useState<IWakaOsSource[]>([]);
+  const [wakaLanguageSource, setWakaLanguageSource] = useState<
+    IWakaLanguageSource[]
+  >([]);
+  const [WakaActivitySource, setWakaActivitySource] =
+    useState<IWakaActivitySource>();
 
-  // Whenever can get real wakatime => un comment useEffect on below
-  // useEffect(() => {
-  //   if (langMockup) {
-  //     setRadarOptions((prev: EChartsOption) => {
-  //       const maxRangeIndicator = langMockup.language_stats[0].percent * 1.1;
-  //       const langData: {
-  //         indicator: { name: string; max: number }[];
-  //         series_data: number[];
-  //       } = {
-  //         indicator: [],
-  //         series_data: [],
-  //       };
-
-  //       langMockup.language_stats.forEach((lang) => {
-  //         langData.indicator.push({
-  //           name: lang.name,
-  //           max: maxRangeIndicator,
-  //         });
-  //         langData.series_data.push(lang.percent);
-  //       });
-
-  //       return {
-  //         ...prev,
-  //         radar: {
-  //           indicator: langData.indicator,
-  //         },
-  //         series: [
-  //           {
-  //             type: "radar",
-  //             symbol: "none",
-  //             data: [{ value: langData.series_data }],
-  //             areaStyle: {
-  //               opacity: 0.375,
-  //             },
-  //           },
-  //         ],
-  //       };
-  //     });
-  //   }
-  // }, [langMockup]);
+  const wakatimeApiSet = [
+    { url: WAKA_SHARE_OS_URL, setState: setWakaOsSource },
+    { url: WAKA_SHARE_LANGUAGES_URL, setState: setWakaLanguageSource },
+    { url: WAKA_SHARE_ACTIVITY_URL, setState: setWakaActivitySource },
+  ]
 
   useEffect(() => {
-    if (OSMockup) {
+    if (wakaLanguageSource.length) {
+      setRadarOptions((prev: EChartsOption) => {
+        const maxRangeIndicator = wakaLanguageSource[0].percent * 1.1;
+        const langData: {
+          indicator: { name: string; max: number }[];
+          series_data: number[];
+        } = {
+          indicator: [],
+          series_data: [],
+        };
+
+        wakaLanguageSource.slice(0, 6).forEach((lang) => {
+          langData.indicator.push({
+            name: lang.name,
+            max: maxRangeIndicator,
+          });
+          langData.series_data.push(lang.percent);
+        });
+
+        return {
+          ...prev,
+          radar: {
+            indicator: langData.indicator,
+          },
+          series: [
+            {
+              type: "radar",
+              symbol: "none",
+              data: [{ value: langData.series_data }],
+              areaStyle: {
+                opacity: 0.375,
+              },
+            },
+          ],
+        };
+      });
+    }
+  }, [wakaLanguageSource]);
+
+  useEffect(() => {
+    if (wakaOsSource.length) {
       setPieOptions((prev: EChartsOption) => {
         const series = prev.series.map((serie: any) => ({
           ...serie,
-          data: OSMockup.map((os) => ({ name: os.name, value: os.decimal })),
+          data: wakaOsSource.map((os) => ({
+            name: os.name,
+            value: os.percent,
+          })),
         }));
         return {
           ...prev,
@@ -241,7 +223,15 @@ const StatsSection: FC<Props> = () => {
         };
       });
     }
-  }, [OSMockup]);
+  }, [wakaOsSource]);
+
+  useEffect(() => {
+    wakatimeApiSet.forEach(api => {
+      axios
+        .get(api.url)
+        .then((res) => api.setState(res.data.data));
+    })
+  }, []);
 
   return (
     <StatsSectionStyled>
@@ -253,7 +243,10 @@ const StatsSection: FC<Props> = () => {
         </Col>
         <Col {...totalRowSpan} className="head-stats">
           <h2>Total Time :</h2>
-          <p>200 hrs 9 mins</p>
+          <p>
+            {WakaActivitySource?.grand_total
+              .human_readable_total_including_other_language ?? "0 hrs 0 mins"}
+          </p>
         </Col>
       </Row>
 
@@ -275,10 +268,10 @@ const StatsSection: FC<Props> = () => {
           />
         </Col>
         <Col sm={12} xs={24}>
-          {langMockup.language_stats.map((lang) => {
+          {wakaLanguageSource.slice(0, 6).map((lang) => {
             return (
               <ProgressRowStyled key={lang.name}>
-                <span>{lang.name}</span>
+                <span>{`${lang.name} => ${lang.text}`}</span>
                 <Progress
                   className="progress-styled"
                   percent={lang.percent}
@@ -311,10 +304,10 @@ const StatsSection: FC<Props> = () => {
           />
         </Col>
         <Col sm={12} xs={24}>
-          {OSMockup.map((os) => {
+          {wakaOsSource.map((os) => {
             return (
               <ProgressRowStyled key={os.name}>
-                <span>{os.name}</span>
+                <span>{`${os.name} => ${os.text}`}</span>
                 <Progress
                   className="progress-styled"
                   percent={os.percent}

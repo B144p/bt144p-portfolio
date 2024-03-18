@@ -21,6 +21,7 @@ body {
 
 html {
   color: $primary-text;
+  scroll-behavior: smooth;
   
   /* width */
   ::-webkit-scrollbar {
