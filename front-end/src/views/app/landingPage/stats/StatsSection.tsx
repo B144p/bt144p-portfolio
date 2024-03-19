@@ -1,6 +1,7 @@
 import { Col, Progress, Row } from "antd";
 import axios from "axios";
 import ReactEChart, { EChartsOption } from "echarts-for-react";
+import moment from "moment";
 import { FC, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import {
@@ -8,9 +9,13 @@ import {
   WAKA_SHARE_LANGUAGES_URL,
   WAKA_SHARE_OS_URL,
 } from "../../../../api/endpoints";
-import { IWakaActivitySource, IWakaLanguageSource, IWakaOsSource } from "../../../../slices/wakatime/wakatime.model";
+import {
+  IWakaActivitySource,
+  IWakaLanguageSource,
+  IWakaOsSource,
+} from "../../../../slices/wakatime/wakatime.model";
 import { colors } from "../../../../utils/colors";
-import { numberFloatFormat } from "../../../../utils/functions";
+import { getDataFromCache, numberFloatFormat, storeCacheData } from "../../../../utils/functions";
 
 type Props = {};
 
@@ -162,10 +167,13 @@ const StatsSection: FC<Props> = () => {
     useState<IWakaActivitySource>();
 
   const wakatimeApiSet = [
-    { url: WAKA_SHARE_OS_URL, setState: setWakaOsSource },
-    { url: WAKA_SHARE_LANGUAGES_URL, setState: setWakaLanguageSource },
-    { url: WAKA_SHARE_ACTIVITY_URL, setState: setWakaActivitySource },
-  ]
+    { name: "waka_os", url: WAKA_SHARE_OS_URL, setState: setWakaOsSource },
+    { name: "waka_languages", url: WAKA_SHARE_LANGUAGES_URL, setState: setWakaLanguageSource },
+    { name: "waka_activity", url: WAKA_SHARE_ACTIVITY_URL, setState: setWakaActivitySource },
+  ];
+
+  const formatDate = (date?: moment.Moment) =>
+    moment(date).format("D MMMM YYYY");
 
   useEffect(() => {
     if (wakaLanguageSource.length) {
@@ -226,11 +234,17 @@ const StatsSection: FC<Props> = () => {
   }, [wakaOsSource]);
 
   useEffect(() => {
-    wakatimeApiSet.forEach(api => {
-      axios
-        .get(api.url)
-        .then((res) => api.setState(res.data.data));
-    })
+    wakatimeApiSet.forEach((api) => {
+      const cachedData = getDataFromCache(api.name);
+      if (cachedData) {
+        api.setState(cachedData);
+      } else {
+        axios.get(api.url).then((res) => {
+          api.setState(res.data.data);
+          storeCacheData(res.data.data, api.name);
+        });
+      }
+    });
   }, []);
 
   return (
@@ -239,7 +253,10 @@ const StatsSection: FC<Props> = () => {
       <Row>
         <Col {...totalRowSpan} className="head-stats">
           <h2>Range :</h2>
-          <p>25 December 2023 - 19 February 2024</p>
+          <p>
+            {formatDate(WakaActivitySource?.range.start)} -{" "}
+            {formatDate(WakaActivitySource?.range.end)}
+          </p>
         </Col>
         <Col {...totalRowSpan} className="head-stats">
           <h2>Total Time :</h2>
