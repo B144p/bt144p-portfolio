@@ -1,8 +1,10 @@
+import { BugFilled } from "@ant-design/icons";
 import { Layout } from "antd";
 import { Header } from "antd/es/layout/layout";
 import PropTypes from "prop-types";
 import { FC, ReactNode, useEffect, useRef, useState } from "react";
 import { Outlet } from "react-router-dom";
+import styled from "styled-components";
 import { colors } from "../utils/colors";
 
 const { Content } = Layout;
@@ -10,6 +12,60 @@ const { Content } = Layout;
 interface BaseLayoutProps {
   children?: ReactNode;
 }
+
+const NavBarStyle = styled.div`
+  background-color: ${colors.navBackground};
+  width: min(90%, 800px);
+  height: 100%;
+  border-radius: 1rem 1rem 1rem 2rem;
+  box-shadow: 0 0 2rem ${colors.background};
+  transform: skew(20deg);
+
+  .navbar-container {
+    display: flex;
+    cursor: pointer;
+
+    .navbar-logo {
+      flex-grow: 1;
+      text-align: center;
+      border-radius: 1rem 0 0 2rem;
+      background-color: ${colors.greenLight};
+      color: ${colors.brightText};
+      span {
+        transform: skew(-20deg);
+      }
+    }
+
+    .navbar-list {
+      flex-grow: 2;
+      text-align: center;
+      font-style: italic;
+      color: ${colors.primaryText};
+      transition: all 0.3s ease-in-out;
+      span {
+        transform: skew(-20deg);
+      }
+    }
+
+    .navbar-list:hover {
+      background-color: ${colors.greenLight};
+      color: ${colors.brightText};
+      border-left: 0.25rem double ${colors.brightText};
+    }
+
+    .navbar-list:last-child:hover {
+      border-radius: 0 1rem 1rem 0;
+    }
+  }
+`;
+
+const navBarElement = [
+  { id: "home", title: "Home" },
+  { id: "about", title: "About" },
+  { id: "stats", title: "Statistics" },
+  { id: "project", title: "Project" },
+  { id: "contact", title: "Contact" },
+];
 
 const BaseLayout: FC<BaseLayoutProps> = () => {
   const navbarRef = useRef<HTMLDivElement>(null);
@@ -52,19 +108,27 @@ const BaseLayout: FC<BaseLayoutProps> = () => {
           backgroundColor: "transparent",
           zIndex: 10,
           transition: "all 0.5s ease-in-out",
+          padding: 0,
         }}
       >
-        <div
-          style={{
-            // backgroundColor: colors.greenLighter,
-            backgroundColor: "#1e272e",
-            width: "min(95%, 1000px)",
-            height: "100%",
-            borderRadius: "1rem",
-            borderBottomLeftRadius: "2rem",
-            boxShadow: `0 0 2rem ${colors.background}`,
-          }}
-        ></div>
+        <NavBarStyle>
+          <div className="navbar-container">
+            <a className="navbar-logo" href="#">
+              <span>
+                <BugFilled />
+              </span>
+            </a>
+            {navBarElement.map((list) => (
+              <a
+                className="navbar-list"
+                href={"#" + list.id}
+                key={"#" + list.id}
+              >
+                <span>{list.title}</span>
+              </a>
+            ))}
+          </div>
+        </NavBarStyle>
       </Header>
       <Content
         style={{
