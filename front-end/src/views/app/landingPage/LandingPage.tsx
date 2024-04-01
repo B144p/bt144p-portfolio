@@ -74,6 +74,7 @@ const LandingPage: FC = () => {
             <li>total lang</li>
             <li>lang top 6 - except JSON</li>
             <li>OS - Linux & Window</li>
+            <li>git activaty chart</li>
           </ul>
         </SectionStyled>
         <DividerStyled orientation="center">
