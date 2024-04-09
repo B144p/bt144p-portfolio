@@ -2,7 +2,7 @@ import { Col, Divider, Row, Timeline } from "antd";
 import { FC } from "react";
 import { styled } from "styled-components";
 import BreakpointComp from "../../../../components/BreakpointComp";
-import { breakpoints } from "../../../../utils/breakpoint";
+import { EBreakpoints } from "../../../../utils/breakpoint";
 import { colors } from "../../../../utils/colors";
 import reactLogo from "../../../../assets/react.svg";
 
@@ -77,7 +77,7 @@ const AboutMeSection: FC<Props> = () => {
             ipsum magni
           </div>
         </Col>
-        {/* <BreakpointComp mode=">=" breakpoint={breakpoints.md}>
+        {/* <BreakpointComp mode=">=" breakpoint={EBreakpoints.md}>
           <DividerStyled orientation="center" style={{ margin: "1rem 0" }}>
             <BugFilled />
           </DividerStyled>
@@ -140,7 +140,7 @@ const AboutMeSection: FC<Props> = () => {
           />
         </Col>
 
-        <BreakpointComp mode=">=" breakpoint={breakpoints.md}>
+        <BreakpointComp mode=">=" breakpoint={EBreakpoints.md}>
           <Col>
             <Divider
               orientation="center"

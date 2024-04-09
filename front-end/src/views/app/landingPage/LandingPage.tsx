@@ -2,7 +2,7 @@ import { BugFilled } from "@ant-design/icons";
 import { Divider } from "antd";
 import { FC } from "react";
 import { styled } from "styled-components";
-import { breakpoints } from "../../../utils/breakpoint";
+import { EBreakpoints } from "../../../utils/breakpoint";
 import { colors } from "../../../utils/colors";
 import headerImg from "../../../assets/BG-1a2329.png";
 import AboutMeSection from "./about/AboutMeSection";
@@ -19,7 +19,7 @@ const HeroSection = styled.section`
   background-position: center;
   background-repeat: no-repeat;
 
-  @media (max-width: ${breakpoints.md + "px"}) {
+  @media (max-width: ${EBreakpoints.md + "px"}) {
     background-position: 30% 50%;
   }
 `;
