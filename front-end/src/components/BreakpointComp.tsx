@@ -1,8 +1,9 @@
 import { FC, useEffect, useState } from "react";
+import { EBreakpoints } from "../utils/breakpoint";
 
 type Props = {
   mode: ">" | "<" | ">=" | "<=";
-  breakpoint: number;
+  breakpoint: EBreakpoints;
   // children: JSX.Element;
 };
 

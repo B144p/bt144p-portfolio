@@ -4,60 +4,16 @@ import { Header } from "antd/es/layout/layout";
 import PropTypes from "prop-types";
 import { FC, ReactNode, useEffect, useRef, useState } from "react";
 import { Outlet } from "react-router-dom";
-import styled from "styled-components";
+import { breakpointCheck } from "../components/BreakpointComp";
+import { EBreakpoints } from "../utils/breakpoint";
 import { colors } from "../utils/colors";
+import "./scss/BaseLayout.scss";
 
 const { Content } = Layout;
 
 interface BaseLayoutProps {
   children?: ReactNode;
 }
-
-const NavBarStyle = styled.div`
-  background-color: ${colors.navBackground};
-  width: min(90%, 800px);
-  height: 100%;
-  border-radius: 1rem 1rem 1rem 2rem;
-  box-shadow: 0 0 2rem ${colors.background};
-  transform: skew(20deg);
-
-  .navbar-container {
-    display: flex;
-    cursor: pointer;
-
-    .navbar-logo {
-      flex-grow: 1;
-      text-align: center;
-      border-radius: 1rem 0 0 2rem;
-      background-color: ${colors.greenLight};
-      color: ${colors.brightText};
-      span {
-        transform: skew(-20deg);
-      }
-    }
-
-    .navbar-list {
-      flex-grow: 2;
-      text-align: center;
-      font-style: italic;
-      color: ${colors.primaryText};
-      transition: all 0.3s ease-in-out;
-      span {
-        transform: skew(-20deg);
-      }
-    }
-
-    .navbar-list:hover {
-      background-color: ${colors.greenLight};
-      color: ${colors.brightText};
-      border-left: 0.25rem double ${colors.brightText};
-    }
-
-    .navbar-list:last-child:hover {
-      border-radius: 0 1rem 1rem 0;
-    }
-  }
-`;
 
 const navBarElement = [
   { id: "home", title: "Home" },
@@ -70,6 +26,7 @@ const navBarElement = [
 const BaseLayout: FC<BaseLayoutProps> = () => {
   const navbarRef = useRef<HTMLDivElement>(null);
   const [prevScrollPos, setPrevScrollPos] = useState(window.scrollY);
+  const [sideBarOpen, setSideBarOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -97,39 +54,64 @@ const BaseLayout: FC<BaseLayoutProps> = () => {
       <div style={{ position: "fixed", right: 10, top: 10 }}>
         {prevScrollPos}
       </div>
-      <Header
-        ref={navbarRef}
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          position: "fixed",
-          top: 2,
-          width: "100vw",
-          backgroundColor: "transparent",
-          zIndex: 10,
-          transition: "all 0.5s ease-in-out",
-          padding: 0,
-        }}
-      >
-        <NavBarStyle>
-          <div className="navbar-container">
-            <a className="navbar-logo" href="#">
-              <span>
-                <BugFilled />
-              </span>
-            </a>
-            {navBarElement.map((list) => (
-              <a
-                className="navbar-list"
-                href={"#" + list.id}
-                key={"#" + list.id}
-              >
-                <span>{list.title}</span>
-              </a>
-            ))}
+      <div>
+        {breakpointCheck({ mode: "<=", breakpoint: EBreakpoints.sm }) ? (
+          <div className="">
+            <label className="burger-btn" htmlFor="burger">
+              <input
+                type="checkbox"
+                id="burger"
+                onClick={() => setSideBarOpen((prev) => !prev)}
+                checked={sideBarOpen}
+              />
+              <span />
+              <span />
+              <span />
+            </label>
+            <div
+              className={`
+                side-container
+                ${
+                  sideBarOpen ? "nav-list-burger-open" : "nav-list-burger-close"
+                }
+              `}
+              onClick={() => setSideBarOpen((prev) => !prev)}
+            >
+              <div className="side-container-list">
+                <ul>
+                  {navBarElement.map((list) => (
+                    <li key={"#" + list.id}>
+                      <a href={"#" + list.id}>
+                        <span>{list.title}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
           </div>
-        </NavBarStyle>
-      </Header>
+        ) : (
+          <Header ref={navbarRef} className="navbar-container-header">
+            <div className="navbar-container">
+              <a className="navbar-logo" href="#">
+                <span>
+                  <BugFilled />
+                </span>
+              </a>
+              {navBarElement.map((list) => (
+                <a
+                  className="navbar-list"
+                  href={"#" + list.id}
+                  key={"#" + list.id}
+                >
+                  <span>{list.title}</span>
+                </a>
+              ))}
+            </div>
+          </Header>
+        )}
+      </div>
+
       <Content
         style={{
           minHeight: 120,
