@@ -1,3 +1,5 @@
+import { HTMLAttributeAnchorTarget } from "react";
+
 export const numberIntFormat = (value: number = 0) => {
   return Intl.NumberFormat("en-EN", {
     maximumFractionDigits: 0,
@@ -31,3 +33,11 @@ export const storeCacheData = (data: Record<string, any>, storageName: string) =
   expirationTime.setDate(expirationTime.getHours() + 8);
   localStorage.setItem(storageName, JSON.stringify({ data, expirationTime }));
 };
+
+export const openNewTabURL = (url: string, target: HTMLAttributeAnchorTarget = '_blank') => {
+  window.open(url, target)?.focus()
+}
+
+export const copyTextClipboard = (text: string) => (
+  navigator.clipboard.writeText(text)
+)

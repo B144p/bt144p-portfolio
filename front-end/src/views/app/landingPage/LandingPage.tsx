@@ -25,10 +25,11 @@ const HeroSection = styled.section`
 `;
 
 const SectionStyled = styled.section`
-  min-height: 90vh;
+  min-height: 75vh;
   width: min(100% - 2rem, 1000px);
   line-height: normal;
   background-color: ${colors.background};
+  align-content: center;
 `;
 
 export const DividerStyled = styled(Divider)`
@@ -75,17 +76,6 @@ const LandingPage: FC = () => {
         </DividerStyled>
         <SectionStyled id="project">
           <ProjectSection />
-        </SectionStyled>
-        <DividerStyled orientation="center">
-          <BugFilled />
-        </DividerStyled>
-        <SectionStyled id="contact">
-          <ul>
-            <li>Linkedin</li>
-            <li>Github</li>
-            <li>Email?</li>
-            <li>QRCode?</li>
-          </ul>
         </SectionStyled>
       </div>
     </div>

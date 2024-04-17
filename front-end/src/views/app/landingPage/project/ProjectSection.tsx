@@ -18,10 +18,18 @@ const ProjectSection: FC<Props> = () => {
   return (
     <ProjectSectionStyled>
       <h1>Projects</h1>
-      <Row justify="center" gutter={[8, 8]}>
+      <Row
+        // justify="center"
+        gutter={[8, 8]}
+      >
         {projectList.map((project) => {
           return (
-            <Col span={6} key={project.name}>
+            <Col
+              xs={24}
+              sm={12}
+              md={8}
+              key={project.name}
+            >
               <div
                 style={{
                   width: "100%",
