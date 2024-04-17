@@ -1,12 +1,19 @@
-import { BugFilled } from "@ant-design/icons";
-import { Layout } from "antd";
+import {
+  BugFilled,
+  GithubFilled,
+  LinkedinFilled,
+  MailOutlined,
+  PhoneFilled,
+} from "@ant-design/icons";
+import { FloatButton, Layout, Row, Space, Tooltip } from "antd";
 import { Header } from "antd/es/layout/layout";
 import PropTypes from "prop-types";
 import { FC, ReactNode, useEffect, useRef, useState } from "react";
 import { Outlet } from "react-router-dom";
-import { breakpointCheck } from "../components/BreakpointComp";
+import BreakpointComp, { breakpointCheck } from "../components/BreakpointComp";
 import { EBreakpoints } from "../utils/breakpoint";
 import { colors } from "../utils/colors";
+import { copyTextClipboard, openNewTabURL } from "../utils/functions";
 import "./scss/BaseLayout.scss";
 
 const { Content } = Layout;
@@ -20,7 +27,32 @@ const navBarElement = [
   { id: "about", title: "About" },
   { id: "stats", title: "Statistics" },
   { id: "project", title: "Project" },
-  { id: "contact", title: "Contact" },
+  { id: "footer", title: "Contact" },
+];
+
+const contactFloatBtn = [
+  {
+    title: "Linkedin",
+    icon: <LinkedinFilled />,
+    action: () => {
+      openNewTabURL(
+        "https://www.linkedin.com/in/pongsatorn-phetmak-9100bb261/"
+      );
+    },
+  },
+  {
+    title: "Github",
+    icon: <GithubFilled />,
+    action: () => {
+      openNewTabURL("https://github.com/b144p");
+    },
+  },
+  {
+    title: "Copy-Email",
+    icon: <MailOutlined />,
+    action: () => copyTextClipboard("pongsatorn144p@gmail.com"),
+  },
+  // { title: 'QrCode', icon: <QrcodeOutlined />, action: () => {} },
 ];
 
 const BaseLayout: FC<BaseLayoutProps> = () => {
@@ -126,11 +158,48 @@ const BaseLayout: FC<BaseLayoutProps> = () => {
       <footer
         style={{
           textAlign: "center",
-          color: "red",
+          color: colors.brightText,
+          display: "flex",
+          justifyContent: "center",
+          backgroundColor: colors.navBackground,
+          boxShadow: `0 0 1rem 0.5rem ${colors.brightText}10`,
         }}
+        id="footer"
       >
-        SwapDynamo Corporation © 2024
+        <Row
+          justify={
+            breakpointCheck({ mode: "<=", breakpoint: EBreakpoints.sm })
+              ? "center"
+              : "space-between"
+          }
+          align="middle"
+          style={{
+            width: "calc(100% - 10rem)",
+          }}
+        >
+          {/* SwapDynamo Corporation © 2024 */}
+          BT_144p © 2024
+          <BreakpointComp mode=">" breakpoint={EBreakpoints.sm}>
+            <Space split style={{ fontSize: "2rem" }}>
+              {contactFloatBtn.map((contact) => (
+                <Tooltip title={contact.title}>
+                  <span onClick={contact.action} style={{ cursor: "pointer" }}>
+                    {contact.icon}
+                  </span>
+                </Tooltip>
+              ))}
+            </Space>
+          </BreakpointComp>
+        </Row>
       </footer>
+
+      <BreakpointComp mode="<=" breakpoint={EBreakpoints.sm}>
+        <FloatButton.Group trigger="click" icon={<PhoneFilled />}>
+          {contactFloatBtn.map((contact) => (
+            <FloatButton icon={contact.icon} onClick={contact.action} />
+          ))}
+        </FloatButton.Group>
+      </BreakpointComp>
     </Layout>
   );
 };

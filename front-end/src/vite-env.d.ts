@@ -5,6 +5,7 @@ interface ImportMetaEnv {
   readonly VITE_WAKA_SHARE_ACTIVITY_PATH: string;
   readonly VITE_WAKA_SHARE_LANGUAGES_PATH: string;
   readonly VITE_WAKA_SHARE_OS_PATH: string;
+  readonly VITE_WAKA_SHARE_CONTRIBUTIONS_PATH: string;
 }
 
 interface ImportMeta {

@@ -3,19 +3,35 @@ import axios from "axios";
 import ReactEChart, { EChartsOption } from "echarts-for-react";
 import moment from "moment";
 import { FC, useEffect, useRef, useState } from "react";
+import Calendar from "react-github-contribution-calendar";
 import styled from "styled-components";
 import {
   WAKA_SHARE_ACTIVITY_URL,
+  WAKA_SHARE_CONTRIBUTIONS_URL,
   WAKA_SHARE_LANGUAGES_URL,
   WAKA_SHARE_OS_URL,
 } from "../../../../api/endpoints";
 import {
   IWakaActivitySource,
+  IWakaContributionSource,
   IWakaLanguageSource,
   IWakaOsSource,
 } from "../../../../slices/wakatime/wakatime.model";
 import { colors } from "../../../../utils/colors";
-import { getDataFromCache, numberFloatFormat, storeCacheData } from "../../../../utils/functions";
+import {
+  getDataFromCache,
+  numberFloatFormat,
+  storeCacheData,
+} from "../../../../utils/functions";
+import {
+  configPie,
+  configRadar,
+  panelAttributesConfig,
+  panelColorsConfig,
+  totalRowSpan,
+} from "./statsSection.model";
+import { breakpointCheck } from "../../../../components/BreakpointComp";
+import { EBreakpoints } from "../../../../utils/breakpoint";
 
 type Props = {};
 
@@ -60,125 +76,62 @@ const StatsSectionStyled = styled.div`
   }
 `;
 
-const totalRowSpan = {
-  sm: {
-    span: 20,
-    offset: 2,
-  },
-  md: {
-    span: 12,
-    offset: 0,
-  },
-  xs: 24,
-};
-
-const configRadar = {
-  title: {
-    show: false,
-  },
-  radar: {
-    // indicator: [],
-    indicator: [
-      { name: "STR", max: 50 },
-      { name: "VIT", max: 50 },
-      { name: "DEX", max: 50 },
-      { name: "AGI", max: 50 },
-      { name: "INT", max: 50 },
-      { name: "LUK", max: 50 },
-    ],
-  },
-  series: [
-    {
-      type: "radar",
-      symbol: "none",
-      data: [
-        {
-          value: [32, 38, 26, 22, 15, 20],
-        },
-        {
-          value: [20, 28, 32, 35, 18, 30],
-        },
-      ],
-      // data: [],
-      areaStyle: {
-        opacity: 0.375,
-      },
-    },
-  ],
-  color: ["#5470c6", "#91cc75"],
-};
-
-const configPie = {
-  tooltip: {
-    trigger: "item",
-    formatter: (params: any) => {
-      let { data, percent } = params;
-      return `${params.marker} ${data.name} : ${Math.floor(
-        data?.value ?? 0
-      )} hrs ${Math.floor(((data?.value ?? 0) % 1) * 60)} mins (${percent}%)`;
-    },
-  },
-  // color: eChartPaletteColor,
-  series: [
-    {
-      type: "pie",
-      radius: ["40%", "70%"],
-      avoidLabelOverlap: false,
-      padAngle: 20,
-      itemStyle: {
-        borderRadius: 5,
-        borderColor: "transparent",
-        borderWidth: 1,
-      },
-      labelLine: {
-        show: false,
-      },
-      label: {
-        show: false,
-        position: "center",
-      },
-      data: [],
-      emphasis: {
-        label: {
-          show: true,
-          fontSize: "1rem",
-          fontWeight: "bold",
-        },
-        itemStyle: {
-          shadowBlur: 10,
-          shadowOffsetX: 0,
-          shadowColor: "rgba(0, 0, 0, 0.5)",
-        },
-      },
-    },
-  ],
-};
-
 const StatsSection: FC<Props> = () => {
   const radarLangRef = useRef(null);
   const pieOSRef = useRef(null);
   const [radarOptions, setRadarOptions] = useState<EChartsOption>(configRadar);
   const [pieOptions, setPieOptions] = useState<EChartsOption>(configPie);
-  const [wakaOsSource, setWakaOsSource] = useState<IWakaOsSource[]>([]);
-  const [wakaLanguageSource, setWakaLanguageSource] = useState<
-    IWakaLanguageSource[]
-  >([]);
+  const [wakaOsSource, setWakaOsSource] = useState<IWakaOsSource>();
+  const [wakaLanguageSource, setWakaLanguageSource] =
+    useState<IWakaLanguageSource>();
   const [WakaActivitySource, setWakaActivitySource] =
     useState<IWakaActivitySource>();
+  const [wakaContributionsSource, setWakaContributionsSource] =
+    useState<IWakaContributionSource>();
 
   const wakatimeApiSet = [
     { name: "waka_os", url: WAKA_SHARE_OS_URL, setState: setWakaOsSource },
-    { name: "waka_languages", url: WAKA_SHARE_LANGUAGES_URL, setState: setWakaLanguageSource },
-    { name: "waka_activity", url: WAKA_SHARE_ACTIVITY_URL, setState: setWakaActivitySource },
+    {
+      name: "waka_languages",
+      url: WAKA_SHARE_LANGUAGES_URL,
+      setState: setWakaLanguageSource,
+    },
+    {
+      name: "waka_activity",
+      url: WAKA_SHARE_ACTIVITY_URL,
+      setState: setWakaActivitySource,
+    },
+    {
+      name: "waka_contributions",
+      url: WAKA_SHARE_CONTRIBUTIONS_URL,
+      setState: setWakaContributionsSource,
+    },
   ];
 
   const formatDate = (date?: moment.Moment) =>
     moment(date).format("D MMMM YYYY");
 
+  const formatContributions = (data?: IWakaContributionSource) => {
+    if (data) {
+      const formatData = data.days
+        .filter((contribute) => contribute.total)
+        .map(({ date, total }) => ({ date, total }));
+
+      return formatData.reduce((acc, current) => {
+        const level = Math.ceil(current.total / (3 * 3600)); // step size = 3 hr.
+        acc[current.date] = Math.min(level, 4); // max level is 4
+        return acc;
+      }, {} as Record<string, number>);
+    }
+    return {};
+  };
+
+  const contributionSource = formatContributions(wakaContributionsSource);
+
   useEffect(() => {
-    if (wakaLanguageSource.length) {
+    if (wakaLanguageSource?.data.length) {
       setRadarOptions((prev: EChartsOption) => {
-        const maxRangeIndicator = wakaLanguageSource[0].percent * 1.1;
+        const maxRangeIndicator = wakaLanguageSource?.data[0].percent * 1.1;
         const langData: {
           indicator: { name: string; max: number }[];
           series_data: number[];
@@ -187,7 +140,7 @@ const StatsSection: FC<Props> = () => {
           series_data: [],
         };
 
-        wakaLanguageSource.slice(0, 6).forEach((lang) => {
+        wakaLanguageSource?.data.slice(0, 6).forEach((lang) => {
           langData.indicator.push({
             name: lang.name,
             max: maxRangeIndicator,
@@ -216,13 +169,14 @@ const StatsSection: FC<Props> = () => {
   }, [wakaLanguageSource]);
 
   useEffect(() => {
-    if (wakaOsSource.length) {
+    if (wakaOsSource?.data.length) {
       setPieOptions((prev: EChartsOption) => {
         const series = prev.series.map((serie: any) => ({
           ...serie,
-          data: wakaOsSource.map((os) => ({
+          data: wakaOsSource?.data.map((os) => ({
             name: os.name,
             value: os.percent,
+            text: os.text,
           })),
         }));
         return {
@@ -240,8 +194,8 @@ const StatsSection: FC<Props> = () => {
         api.setState(cachedData);
       } else {
         axios.get(api.url).then((res) => {
-          api.setState(res.data.data);
-          storeCacheData(res.data.data, api.name);
+          api.setState(res.data);
+          storeCacheData(res.data, api.name);
         });
       }
     });
@@ -254,14 +208,14 @@ const StatsSection: FC<Props> = () => {
         <Col {...totalRowSpan} className="head-stats">
           <h2>Range :</h2>
           <p>
-            {formatDate(WakaActivitySource?.range.start)} -{" "}
-            {formatDate(WakaActivitySource?.range.end)}
+            {formatDate(WakaActivitySource?.data.range.start)} -{" "}
+            {formatDate(WakaActivitySource?.data.range.end)}
           </p>
         </Col>
         <Col {...totalRowSpan} className="head-stats">
           <h2>Total Time :</h2>
           <p>
-            {WakaActivitySource?.grand_total
+            {WakaActivitySource?.data.grand_total
               .human_readable_total_including_other_language ?? "0 hrs 0 mins"}
           </p>
         </Col>
@@ -285,7 +239,7 @@ const StatsSection: FC<Props> = () => {
           />
         </Col>
         <Col sm={12} xs={24}>
-          {wakaLanguageSource.slice(0, 6).map((lang) => {
+          {wakaLanguageSource?.data.slice(0, 6).map((lang) => {
             return (
               <ProgressRowStyled key={lang.name}>
                 <span>{`${lang.name} => ${lang.text}`}</span>
@@ -321,7 +275,7 @@ const StatsSection: FC<Props> = () => {
           />
         </Col>
         <Col sm={12} xs={24}>
-          {wakaOsSource.map((os) => {
+          {wakaOsSource?.data.map((os) => {
             return (
               <ProgressRowStyled key={os.name}>
                 <span>{`${os.name} => ${os.text}`}</span>
@@ -337,6 +291,28 @@ const StatsSection: FC<Props> = () => {
             );
           })}
         </Col>
+      </Row>
+      <Row justify="center">
+        <div
+          style={{
+            width: "min(100%, 45rem)",
+            paddingTop: breakpointCheck({
+              mode: "<=",
+              breakpoint: EBreakpoints.sm,
+            })
+              ? "2rem"
+              : "unset",
+          }}
+        >
+          <Calendar
+            values={contributionSource}
+            until={moment().format("YYYY-MM-DD")}
+            panelColors={panelColorsConfig}
+            panelAttributes={panelAttributesConfig}
+            weekLabelAttributes={undefined}
+            monthLabelAttributes={undefined}
+          />
+        </div>
       </Row>
     </StatsSectionStyled>
   );
