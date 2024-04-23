@@ -1,0 +1,111 @@
+@import "../../assets/scss/color.scss";
+
+.main {
+  background-color: $greenDark;
+  padding: 0.375rem;
+  border-radius: 0.875rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.card {
+  width: 100%;
+  aspect-ratio: 3/2;
+  background-color: #252525;
+  border-radius: 0.5rem;
+  cursor: pointer;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 3rem;
+}
+
+// ------------------------ Start-Section: Detail ------------------------
+.detail {
+  display: flex;
+  flex-direction: row;
+  margin-top: 0.75rem;
+}
+
+.detail-img {
+  width: 2.25rem;
+  aspect-ratio: 1;
+  background-color: #252525;
+  border-radius: 0.3125rem;
+  overflow: hidden;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1rem;
+}
+
+.detail-text {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  margin-left: 0.5rem;
+  font-family: Montserrat;
+  color: $brightText;
+}
+
+.main-text {
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.sub-text {
+  font-size: 0.7rem;
+}
+// ------------------------ End-Section: Detail ------------------------
+
+// ------------------------ Start-Section: Icon ------------------------
+.tag-container {
+  width: 100%;
+  display: flex;
+  gap: 0.25rem;
+  overflow: auto;
+
+  .tag-item {
+    transition: all 0.4s;
+    margin-top: -1rem;
+    opacity: 0;
+    font-weight: bold;
+    font-family: Montserrat;
+    font-size: 0.75rem;
+    color: $brightText;
+    background-color: rgba($navBackground, 0.7);
+    white-space: nowrap;
+    line-height: 1.25rem;
+    padding-inline: 0.375rem;
+    border-radius: 0.25rem;
+  }
+}
+
+.tag-container::-webkit-scrollbar {
+  height: 0.25rem;
+  display: none;
+}
+// ------------------------ End-Section: Icon ------------------------
+
+// ------------------------ Start-Section: Hover card ------------------------
+.main:hover {
+  background-color: $greenLighter;
+
+  .tag {
+    margin-top: 0.5rem;
+    opacity: 1;
+  }
+
+  .tag-item {
+    margin-top: 0.5rem;
+    margin-bottom: 0.25rem;
+    opacity: 1;
+  }
+
+  .tag-container::-webkit-scrollbar {
+    display: unset;
+  }
+}
+
+// ------------------------ End-Section: Hover card ------------------------
