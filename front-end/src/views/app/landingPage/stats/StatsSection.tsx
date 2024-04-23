@@ -195,7 +195,7 @@ const StatsSection: FC<Props> = () => {
       } else {
         axios.get(api.url).then((res) => {
           api.setState(res.data);
-          storeCacheData(res.data, api.name);
+          storeCacheData(res.data, api.name, 4);
         });
       }
     });

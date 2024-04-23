@@ -18,7 +18,9 @@ export const getDataFromCache = (storageName: string) => {
   if (cachedData) {
     const parsedData = JSON.parse(cachedData);
     const expirationTime = new Date(parsedData.expirationTime);
-    if (expirationTime > new Date()) {
+    const currentDate = new Date();
+    // expire date is UTC
+    if (expirationTime > currentDate) {
       return parsedData.data;
     } else {
       localStorage.removeItem(storageName);
@@ -27,17 +29,22 @@ export const getDataFromCache = (storageName: string) => {
   return null;
 };
 
-export const storeCacheData = (data: Record<string, any>, storageName: string) => {
+export const storeCacheData = (
+  data: Record<string, any>,
+  storageName: string,
+  expireHour: number = 1
+) => {
   const expirationTime = new Date();
-  // expirationTime.setDate(expirationTime.getDate() + 1);
-  expirationTime.setDate(expirationTime.getHours() + 8);
+  expirationTime.setHours(expirationTime.getHours() + expireHour);
   localStorage.setItem(storageName, JSON.stringify({ data, expirationTime }));
 };
 
-export const openNewTabURL = (url: string, target: HTMLAttributeAnchorTarget = '_blank') => {
-  window.open(url, target)?.focus()
-}
+export const openNewTabURL = (
+  url: string,
+  target: HTMLAttributeAnchorTarget = "_blank"
+) => {
+  window.open(url, target)?.focus();
+};
 
-export const copyTextClipboard = (text: string) => (
-  navigator.clipboard.writeText(text)
-)
+export const copyTextClipboard = (text: string) =>
+  navigator.clipboard.writeText(text);
