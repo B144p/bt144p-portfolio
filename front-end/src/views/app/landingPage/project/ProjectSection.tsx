@@ -57,16 +57,16 @@ const ProjectSection: FC<Props> = () => {
           sm: "start",
         }}
         style={{
-          margin: "2rem",
-          marginTop: 0,
+          margin: "2rem 0",
         }}
         gutter={[16, 16]}
       >
         {projectList.map((project) => (
           <Col
-            xs={20}
-            sm={8}
-            md={6}
+            xs={22}
+            sm={12}
+            md={8}
+            lg={6}
             key={project.name}
             onClick={() =>
               openNewTabURL(project.path, project.target ?? "_self")

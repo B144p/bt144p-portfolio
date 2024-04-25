@@ -1,4 +1,5 @@
 @import "../../assets/scss/color.scss";
+@import "../../assets/scss/breakpoint.scss";
 
 .main {
   background-color: $greenDark;
@@ -107,5 +108,19 @@
     display: unset;
   }
 }
-
 // ------------------------ End-Section: Hover card ------------------------
+
+@media screen and (max-width: $breakpointMd) {
+  .main {
+    .tag-container {
+      overflow: unset;
+      flex-wrap: wrap;
+      margin-top: 0.5rem;
+
+      .tag-item {
+        margin: unset;
+        opacity: 1;
+      }
+    }
+  }
+}

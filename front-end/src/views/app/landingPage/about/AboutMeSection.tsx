@@ -1,10 +1,10 @@
 import { Col, Divider, Row, Timeline } from "antd";
 import { FC } from "react";
 import { styled } from "styled-components";
+import reactLogo from "../../../../assets/react.svg";
 import BreakpointComp from "../../../../components/BreakpointComp";
 import { EBreakpoints } from "../../../../utils/breakpoint";
 import { colors } from "../../../../utils/colors";
-import reactLogo from "../../../../assets/react.svg";
 
 type Props = {};
 
@@ -20,7 +20,7 @@ const AboutMeSectionStyled = styled.div`
   }
 
   .about-row {
-    margin-bottom: 1rem;
+    margin-bottom: 2rem;
   }
 
   .header-sub-col {
@@ -35,6 +35,11 @@ const AboutMeSectionStyled = styled.div`
     .detail {
       font-weight: normal;
       font-size: 1rem;
+      display: block;
+    }
+
+    .detail-value {
+      display: unset;
     }
 
     .ant-timeline-item-tail {
@@ -68,17 +73,23 @@ const AboutMeSection: FC<Props> = () => {
       <Row id="about-me" className="about-row" justify="center">
         <Col span={23} className="about-col">
           <h1>About Me</h1>
-          <div style={{ textIndent: "2rem" }}>
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Beatae,
-            iste debitis! Odio expedita dolor modi eaque velit. At voluptatibus,
-            quam dolorum laborum aperiam velit! Vel suscipit veritatis quia
-            nesciunt doloribus! Quos dolorum sed placeat ab natus iure quidem
-            eius eaque minima exercitationem dignissimos harum quasi, nobis
-            ipsum magni
+          <div style={{ textIndent: "2rem", fontSize: "1rem" }}>
+            🌱 I'm complete Bachelor Degree on Major : "Control Engineering"
+            from KMITL. But now, I want switch to "Developer". First, I started
+            as a "Web Developer". In additional, I'm pretty interested in
+            "Automate-bot or Library". Because some work have fixed pattern, and
+            I feel like It's waste my relax time. 😄 That's cause why I
+            interested to learn Bot.
           </div>
         </Col>
-        {/* <BreakpointComp mode=">=" breakpoint={EBreakpoints.md}>
-          <DividerStyled orientation="center" style={{ margin: "1rem 0" }}>
+        {/* <BreakpointComp mode=">=" breakpoint={EBreakpoints.sm}>
+          <DividerStyled
+            orientation="center"
+            style={{
+              margin: "1rem 0",
+              width: "min(75%, 800px)",
+            }}
+          >
             <BugFilled />
           </DividerStyled>
         </BreakpointComp> */}
@@ -175,11 +186,15 @@ const AboutMeSection: FC<Props> = () => {
                           <ul style={{ paddingLeft: "2rem" }}>
                             <li>
                               Role:{" "}
-                              <span className="detail">Frontend Developer</span>
+                              <span className="detail detail-value">
+                                Frontend Developer
+                              </span>
                             </li>
                             <li>
                               Project:{" "}
-                              <span className="detail">FM-Project</span>
+                              <span className="detail detail-value">
+                                FM-Project
+                              </span>
                             </li>
                             <li>
                               Responsibilities :
