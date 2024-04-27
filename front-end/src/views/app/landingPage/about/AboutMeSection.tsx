@@ -76,10 +76,10 @@ const AboutMeSection: FC<Props> = () => {
           <div style={{ textIndent: "2rem", fontSize: "1rem" }}>
             🌱 I'm complete Bachelor Degree on Major : "Control Engineering"
             from KMITL. But now, I want switch to "Developer". First, I started
-            as a "Web Developer". In additional, I'm pretty interested in
-            "Automate-bot or Library". Because some work have fixed pattern, and
-            I feel like It's waste my relax time. 😄 That's cause why I
-            interested to learn Bot.
+            as a "Web Developer". Lorem ipsum dolor sit amet consectetur
+            adipisicing elit. Sit facilis laborum suscipit, consequuntur
+            asperiores deserunt non sint cupiditate provident fugiat harum.
+            Dicta maiores porro doloribus veniam ipsa odit error animi?
           </div>
         </Col>
         {/* <BreakpointComp mode=">=" breakpoint={EBreakpoints.sm}>

@@ -6,4 +6,5 @@ export type TProjectList = {
   tag: string[];
   path: string;
   target: HTMLAttributeAnchorTarget;
+  upcoming?: boolean;
 };
