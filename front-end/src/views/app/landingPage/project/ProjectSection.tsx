@@ -19,11 +19,11 @@ const ProjectSection: FC<Props> = () => {
       target: "_blank",
     },
     {
-      name: "React-Workshop",
-      detail: "React-JS Lab",
-      tag: ["Javascript"],
-      path: "#about",
-      target: "_self",
+      name: "Portfolio V.1",
+      detail: "Start line of web-developer.",
+      tag: ["React", "MERN-Stack", "Python", "Selenium"],
+      path: "https://test-webport-b144p.netlify.app/",
+      target: "_blank",
     },
     {
       name: "Poke-Dex",
@@ -31,13 +31,15 @@ const ProjectSection: FC<Props> = () => {
       tag: ["React", "Typescript", "Antd", "GraphQL", "Poke-API"],
       path: "#about",
       target: "_self",
+      upcoming: true,
     },
     {
-      name: "Portfolio V.1",
-      detail: "Start line of web-developer.",
-      tag: ["React", "MERN-Stack", "Python", "Selenium"],
-      path: "https://test-webport-b144p.netlify.app/",
-      target: "_blank",
+      name: "React-Workshop",
+      detail: "React-JS Lab",
+      tag: ["Javascript"],
+      path: "#about",
+      target: "_self",
+      upcoming: true,
     },
   ];
 
@@ -69,13 +71,14 @@ const ProjectSection: FC<Props> = () => {
             lg={6}
             key={project.name}
             onClick={() =>
-              openNewTabURL(project.path, project.target ?? "_self")
+              !project.upcoming && openNewTabURL(project.path, project.target ?? "_self")
             }
           >
             <ProjectCard
               title={project.name}
               detail={project.name}
               tagList={project.tag}
+              upcoming={project.upcoming}
             />
           </Col>
         ))}
