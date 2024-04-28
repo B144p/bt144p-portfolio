@@ -170,3 +170,19 @@
   }
 }
 // ================ END => sidebar section ================
+
+.float-btn {
+  .ant-float-btn {
+    &-default {
+      background-color: $greenLighter;
+    }
+
+    &-body {
+      background-color: $greenLight;
+
+      .anticon {
+        color: $brightText;
+      }
+    }
+  }
+}

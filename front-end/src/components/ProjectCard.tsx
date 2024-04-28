@@ -6,13 +6,15 @@ type Props = {
   title: string;
   detail: string;
   tagList: string[];
+  upcoming?: boolean;
 };
 
-const ProjectCard: React.FC<Props> = ({ title, detail, tagList }) => {
+const ProjectCard: React.FC<Props> = ({ title, detail, tagList, upcoming }) => {
   return (
-    <div className="main">
-      <div className="card">
+    <div className={`main ${upcoming ? "main-upcoming" : ""}`}>
+      <div className={`card ${upcoming ? "card-upcoming" : ""}`}>
         <BugFilled />
+        {upcoming && <span className="card-upcoming-text">Upcoming...</span>}
       </div>
       <div className="detail">
         <div className="detail-img">
