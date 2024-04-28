@@ -194,9 +194,17 @@ const BaseLayout: FC<BaseLayoutProps> = () => {
       </footer>
 
       <BreakpointComp mode="<=" breakpoint={EBreakpoints.sm}>
-        <FloatButton.Group trigger="click" icon={<PhoneFilled />}>
+        <FloatButton.Group
+          className="float-btn"
+          trigger="click"
+          icon={<PhoneFilled />}
+        >
           {contactFloatBtn.map((contact) => (
-            <FloatButton icon={contact.icon} onClick={contact.action} />
+            <FloatButton
+              className="float-btn"
+              icon={contact.icon}
+              onClick={contact.action}
+            />
           ))}
         </FloatButton.Group>
       </BreakpointComp>
