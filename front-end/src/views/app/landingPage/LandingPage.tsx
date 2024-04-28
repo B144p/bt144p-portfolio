@@ -8,11 +8,13 @@ import headerImg from "../../../assets/BG-1a2329.png";
 import AboutMeSection from "./about/AboutMeSection";
 import StatsSection from "./stats/StatsSection";
 import ProjectSection from "./project/ProjectSection";
+import { Meteors } from "../../../components/Meteors";
+import { breakpointCheck } from "../../../components/BreakpointComp";
 
 const HeroSection = styled.section`
   min-height: 90vh;
   width: 100vw;
-  box-shadow: inset 0px -2rem 1.5rem 0px ${colors.background};
+  box-shadow: inset 0px -7.5rem 7.5rem 0px ${colors.background};
 
   background-image: url(${headerImg});
   background-size: cover;
@@ -51,6 +53,13 @@ export const DividerStyled = styled(Divider)`
 const LandingPage: FC = () => {
   return (
     <div>
+      <Meteors
+      number={
+        breakpointCheck({ mode: "<=", breakpoint: EBreakpoints.sm })
+          ? 30
+          : 100
+        }
+      />
       <HeroSection id="home">
         <div className="hero-text"></div>
         <div className="hero-img"></div>
