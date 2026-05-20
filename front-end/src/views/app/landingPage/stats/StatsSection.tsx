@@ -18,8 +18,6 @@ import {
 import { breakpointCheck } from "../../../../components/BreakpointComp";
 import { EBreakpoints } from "../../../../utils/breakpoint";
 
-type Props = {};
-
 const ProgressRowStyled = styled(Row)`
   color: ${colors.primaryText};
 
@@ -61,7 +59,7 @@ const StatsSectionStyled = styled.div`
   }
 `;
 
-const StatsSection: FC<Props> = () => {
+const StatsSection: FC = () => {
   const radarLangRef = useRef(null);
   const pieOSRef = useRef(null);
   const [radarOptions, setRadarOptions] = useState<EChartsOption>(configRadar);
@@ -101,20 +99,21 @@ const StatsSection: FC<Props> = () => {
       const sorted = [...statistic.languages]
         .sort((a, b) => b.totalSeconds - a.totalSeconds)
         .slice(0, 6);
-      const maxRangeIndicator = sorted[0].percent * 1.1;
+      const scale = (v: number) => Math.cbrt(v);
+      const scaledMax = scale(sorted[0].percent) * 1.1;
       setRadarOptions((prev: EChartsOption) => ({
         ...prev,
         radar: {
           indicator: sorted.map((lang) => ({
             name: lang.language,
-            max: maxRangeIndicator,
+            max: scaledMax,
           })),
         },
         series: [
           {
             type: "radar",
             symbol: "none",
-            data: [{ value: sorted.map((lang) => lang.percent) }],
+            data: [{ value: sorted.map((lang) => scale(lang.percent)) }],
             areaStyle: { opacity: 0.375 },
           },
         ],
