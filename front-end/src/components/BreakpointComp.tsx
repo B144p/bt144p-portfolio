@@ -24,9 +24,8 @@ export const useWindowWidth = () => {
   return windowWidth;
 };
 
-export const breakpointCheck = ({ mode, breakpoint }: Props) => {
-  const windowWidth = useWindowWidth();
-  return eval(windowWidth + mode + breakpoint);
+export const breakpointCheck = ({ mode, breakpoint }: Props): boolean => {
+  return eval(window.innerWidth + mode + breakpoint);
 };
 
 const BreakpointComp: FC<Props & { children: React.ReactNode }> = ({

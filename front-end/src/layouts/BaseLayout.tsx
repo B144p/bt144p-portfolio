@@ -1,6 +1,7 @@
 import {
   BugFilled,
   GithubFilled,
+  LinkOutlined,
   LinkedinFilled,
   MailOutlined,
   PhoneFilled,
@@ -15,6 +16,9 @@ import { EBreakpoints } from "../utils/breakpoint";
 import { colors } from "../utils/colors";
 import { copyTextClipboard, openNewTabURL } from "../utils/functions";
 import "./scss/BaseLayout.scss";
+import { useAppDispatch, useAppSelector } from "../app/store";
+import { fetchContactsAction } from "../slices/contact/contact.slice";
+import { IContact } from "../api/portfolioApi";
 
 const { Content } = Layout;
 
@@ -30,35 +34,32 @@ const navBarElement = [
   { id: "footer", title: "Contact" },
 ];
 
-const contactFloatBtn = [
-  {
-    title: "Linkedin",
-    icon: <LinkedinFilled />,
-    action: () => {
-      openNewTabURL(
-        "https://www.linkedin.com/in/pongsatorn-phetmak-9100bb261/"
-      );
-    },
-  },
-  {
-    title: "Github",
-    icon: <GithubFilled />,
-    action: () => {
-      openNewTabURL("https://github.com/b144p");
-    },
-  },
-  {
-    title: "Copy-Email",
-    icon: <MailOutlined />,
-    action: () => copyTextClipboard("pongsatorn144p@gmail.com"),
-  },
-  // { title: 'QrCode', icon: <QrcodeOutlined />, action: () => {} },
-];
+const getContactConfig = (contact: IContact) => {
+  const t = contact.title.toLowerCase();
+  if (t.includes("linkedin"))
+    return { icon: <LinkedinFilled />, action: () => openNewTabURL(contact.url) };
+  if (t.includes("github"))
+    return { icon: <GithubFilled />, action: () => openNewTabURL(contact.url) };
+  if (t.includes("email") || t.includes("mail"))
+    return { icon: <MailOutlined />, action: () => copyTextClipboard(contact.url) };
+  return { icon: <LinkOutlined />, action: () => openNewTabURL(contact.url) };
+};
 
 const BaseLayout: FC<BaseLayoutProps> = () => {
+  const dispatch = useAppDispatch();
   const navbarRef = useRef<HTMLDivElement>(null);
   const [prevScrollPos, setPrevScrollPos] = useState(window.scrollY);
   const [sideBarOpen, setSideBarOpen] = useState(false);
+
+  const contacts = useAppSelector((state) => state.contact.data) ?? [];
+  const contactButtons = contacts.map((c) => ({
+    title: c.title,
+    ...getContactConfig(c),
+  }));
+
+  useEffect(() => {
+    dispatch(fetchContactsAction());
+  }, [dispatch]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -177,12 +178,11 @@ const BaseLayout: FC<BaseLayoutProps> = () => {
             width: "calc(100% - 10rem)",
           }}
         >
-          {/* SwapDynamo Corporation © 2024 */}
           BT_144p © 2024
           <BreakpointComp mode=">" breakpoint={EBreakpoints.sm}>
             <Space split style={{ fontSize: "2rem" }}>
-              {contactFloatBtn.map((contact) => (
-                <Tooltip title={contact.title}>
+              {contactButtons.map((contact) => (
+                <Tooltip key={contact.title} title={contact.title}>
                   <span onClick={contact.action} style={{ cursor: "pointer" }}>
                     {contact.icon}
                   </span>
@@ -199,8 +199,9 @@ const BaseLayout: FC<BaseLayoutProps> = () => {
           trigger="click"
           icon={<PhoneFilled />}
         >
-          {contactFloatBtn.map((contact) => (
+          {contactButtons.map((contact) => (
             <FloatButton
+              key={contact.title}
               className="float-btn"
               icon={contact.icon}
               onClick={contact.action}
