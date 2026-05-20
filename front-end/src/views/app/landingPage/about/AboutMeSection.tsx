@@ -8,8 +8,6 @@ import { EBreakpoints } from "../../../../utils/breakpoint";
 import { colors } from "../../../../utils/colors";
 import { useAppSelector } from "../../../../app/store";
 
-type Props = {};
-
 const AboutMeSectionStyled = styled.div`
   * {
     color: ${colors.primaryText};
@@ -48,7 +46,9 @@ const AboutMeSectionStyled = styled.div`
       background-color: ${colors.primaryText};
     }
 
-    b, h2, h3 {
+    b,
+    h2,
+    h3 {
       margin: 0;
     }
   }
@@ -60,7 +60,7 @@ const AboutMeSectionStyled = styled.div`
   }
 `;
 
-const AboutMeSection: FC<Props> = () => {
+const AboutMeSection: FC = () => {
   const aboutMe = useAppSelector((state) => state.aboutMe.data);
   const aboutMeLoading = useAppSelector((state) => state.aboutMe.loading);
   const education = useAppSelector((state) => state.education.data) ?? [];
@@ -165,7 +165,26 @@ const AboutMeSection: FC<Props> = () => {
                     <b className="time-range">
                       {moment.unix(exp.startDate).format("MMM YYYY")} -{" "}
                       {exp.endDate
-                        ? moment.unix(exp.endDate).format("MMM YYYY")
+                        ? (() => {
+                            const start = moment.unix(exp.startDate);
+                            const end = moment.unix(exp.endDate);
+                            const years = end.diff(start, "years");
+                            const months = end.diff(
+                              start.clone().add(years, "years"),
+                              "months",
+                            );
+                            const remainingDays = end.diff(
+                              start.clone().add(years, "years").add(months, "months"),
+                              "days",
+                            );
+                            let y = years;
+                            let m = months + (remainingDays > 0 ? 1 : 0);
+                            if (m >= 12) { y += 1; m -= 12; }
+                            const parts = [];
+                            if (y > 0) parts.push(`${y} year${y > 1 ? "s" : ""}`);
+                            if (m > 0) parts.push(`${m} month${m > 1 ? "s" : ""}`);
+                            return `${end.format("MMM YYYY")}${parts.length ? ` (${parts.join(" ")})` : ""}`;
+                          })()
                         : "Now"}
                     </b>
                     <Row justify="center">
