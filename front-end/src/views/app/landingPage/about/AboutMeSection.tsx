@@ -1,12 +1,12 @@
-import { Col, Divider, Row, Timeline } from "antd";
+import { Col, Divider, Row, Skeleton, Timeline } from "antd";
+import moment from "moment";
 import { FC } from "react";
 import { styled } from "styled-components";
 import reactLogo from "../../../../assets/react.svg";
 import BreakpointComp from "../../../../components/BreakpointComp";
 import { EBreakpoints } from "../../../../utils/breakpoint";
 import { colors } from "../../../../utils/colors";
-
-type Props = {};
+import { useAppSelector } from "../../../../app/store";
 
 const AboutMeSectionStyled = styled.div`
   * {
@@ -46,7 +46,9 @@ const AboutMeSectionStyled = styled.div`
       background-color: ${colors.primaryText};
     }
 
-    b, h2, h3 {
+    b,
+    h2,
+    h3 {
       margin: 0;
     }
   }
@@ -55,100 +57,83 @@ const AboutMeSectionStyled = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
-    /* align-items: start; */
-    /* margin-top: 1rem; */
   }
 `;
 
-const AboutMeSection: FC<Props> = () => {
-  const aboutSectionSpan = {
-    xs: 24,
-    sm: 24,
-    md: 11,
-    style: {},
-  };
+const AboutMeSection: FC = () => {
+  const aboutMe = useAppSelector((state) => state.aboutMe.data);
+  const aboutMeLoading = useAppSelector((state) => state.aboutMe.loading);
+  const education = useAppSelector((state) => state.education.data) ?? [];
+  const educationLoading = useAppSelector((state) => state.education.loading);
+  const experience = useAppSelector((state) => state.experience.data) ?? [];
+  const experienceLoading = useAppSelector((state) => state.experience.loading);
+
+  const aboutSectionSpan = { xs: 24, sm: 24, md: 11, style: {} };
 
   return (
     <AboutMeSectionStyled>
       <Row id="about-me" className="about-row" justify="center">
         <Col span={23} className="about-col">
           <h1>About Me</h1>
-          <div style={{ textIndent: "2rem", fontSize: "1rem" }}>
-            🌱 I'm complete Bachelor Degree on Major : "Control Engineering"
-            from KMITL. But now, I want switch to "Developer". First, I started
-            as a "Web Developer". Lorem ipsum dolor sit amet consectetur
-            adipisicing elit. Sit facilis laborum suscipit, consequuntur
-            asperiores deserunt non sint cupiditate provident fugiat harum.
-            Dicta maiores porro doloribus veniam ipsa odit error animi?
-          </div>
+          {aboutMeLoading ? (
+            <Skeleton active paragraph={{ rows: 3 }} />
+          ) : (
+            <div style={{ fontSize: "1rem" }}>
+              {aboutMe?.intro && (
+                <p style={{ textIndent: "2rem" }}>{aboutMe.intro}</p>
+              )}
+              {aboutMe?.bio && (
+                <p style={{ textIndent: "2rem" }}>{aboutMe.bio}</p>
+              )}
+              {aboutMe?.mission && (
+                <p style={{ textIndent: "2rem" }}>{aboutMe.mission}</p>
+              )}
+            </div>
+          )}
         </Col>
-        {/* <BreakpointComp mode=">=" breakpoint={EBreakpoints.sm}>
-          <DividerStyled
-            orientation="center"
-            style={{
-              margin: "1rem 0",
-              width: "min(75%, 800px)",
-            }}
-          >
-            <BugFilled />
-          </DividerStyled>
-        </BreakpointComp> */}
       </Row>
       <Row gutter={[8, 8]} justify="center">
         <Col {...aboutSectionSpan} id="education" className="education-col">
           <h2 className="header-sub-col">Education</h2>
-          <Timeline
-            className="timeline"
-            items={[
-              {
+          {educationLoading ? (
+            <Skeleton active />
+          ) : (
+            <Timeline
+              className="timeline"
+              items={education.map((edu) => ({
                 color: colors.primaryText,
                 children: (
                   <div>
-                    <b className="time-range">2012 - 2017</b>
+                    <b className="time-range">
+                      {moment.unix(edu.startDate).format("YYYY")} -{" "}
+                      {edu.endDate
+                        ? moment.unix(edu.endDate).format("YYYY")
+                        : "Present"}
+                    </b>
                     <Row justify="center">
                       <Col className="timeline-logo-col" span={4}>
                         <img src={reactLogo} alt="" />
                       </Col>
                       <Col span={20}>
                         <h2>
-                          Surawittayakarn School
-                          <div>
-                            <ul className="detail">
-                              <li>Grade 7-12</li>
-                            </ul>
-                          </div>
+                          {edu.title}
+                          {edu.descriptions.length > 0 && (
+                            <div>
+                              <ul className="detail">
+                                {edu.descriptions.map((desc) => (
+                                  <li key={desc.id}>{desc.description}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
                         </h2>
                       </Col>
                     </Row>
                   </div>
                 ),
-              },
-              {
-                color: colors.primaryText,
-                children: (
-                  <div>
-                    <b className="time-range">2018 - 2022</b>
-                    <Row justify="center">
-                      <Col className="timeline-logo-col" span={4}>
-                        <img src={reactLogo} alt="" />
-                      </Col>
-                      <Col span={20}>
-                        <h2>
-                          King Mongkut's Institute of Technology Ladkrabang
-                          <div>
-                            <ul className="detail">
-                              <li>Bachelor of Control Engineering</li>
-                              <li>3rd Class Honors in Bachelor's</li>
-                            </ul>
-                          </div>
-                        </h2>
-                      </Col>
-                    </Row>
-                  </div>
-                ),
-              },
-            ]}
-          />
+              }))}
+            />
+          )}
         </Col>
 
         <BreakpointComp mode=">=" breakpoint={EBreakpoints.md}>
@@ -168,65 +153,76 @@ const AboutMeSection: FC<Props> = () => {
 
         <Col {...aboutSectionSpan} id="experience" className="experience-col">
           <h2 className="header-sub-col">Experience</h2>
-          <Timeline
-            className="timeline"
-            items={[
-              {
+          {experienceLoading ? (
+            <Skeleton active />
+          ) : (
+            <Timeline
+              className="timeline"
+              items={experience.map((exp) => ({
                 color: colors.primaryText,
                 children: (
                   <div>
-                    <b className="time-range">Feb 2023 - Now</b>
+                    <b className="time-range">
+                      {moment.unix(exp.startDate).format("MMM YYYY")} -{" "}
+                      {exp.endDate
+                        ? (() => {
+                            const start = moment.unix(exp.startDate);
+                            const end = moment.unix(exp.endDate);
+                            const years = end.diff(start, "years");
+                            const months = end.diff(
+                              start.clone().add(years, "years"),
+                              "months",
+                            );
+                            const remainingDays = end.diff(
+                              start.clone().add(years, "years").add(months, "months"),
+                              "days",
+                            );
+                            let y = years;
+                            let m = months + (remainingDays > 0 ? 1 : 0);
+                            if (m >= 12) { y += 1; m -= 12; }
+                            const parts = [];
+                            if (y > 0) parts.push(`${y} year${y > 1 ? "s" : ""}`);
+                            if (m > 0) parts.push(`${m} month${m > 1 ? "s" : ""}`);
+                            return `${end.format("MMM YYYY")}${parts.length ? ` (${parts.join(" ")})` : ""}`;
+                          })()
+                        : "Now"}
+                    </b>
                     <Row justify="center">
                       <Col className="timeline-logo-col" span={4}>
                         <img src={reactLogo} alt="" />
                       </Col>
                       <Col span={20}>
-                        <h2>Swift Dynamics Co., Ltd., Thailand</h2>
+                        <h2>{exp.company}</h2>
                         <h3>
                           <ul style={{ paddingLeft: "2rem" }}>
                             <li>
                               Role:{" "}
                               <span className="detail detail-value">
-                                Frontend Developer
+                                {exp.role}
                               </span>
                             </li>
-                            <li>
-                              Project:{" "}
-                              <span className="detail detail-value">
-                                FM-Project
-                              </span>
-                            </li>
-                            <li>
-                              Responsibilities :
-                              <ul
-                                className="detail"
-                                style={{ paddingLeft: "1.5rem" }}
-                              >
-                                <li>
-                                  Implement new features using React,
-                                  Typescript, Antd.
-                                </li>
-                                <li>maintenance application</li>
-                                <li>
-                                  Analyze requirement, design and validate
-                                  feature directions.
-                                </li>
-                                <li>
-                                  Work closely with Product Owners and UX/UI
-                                  Designer to reiterate design to launch quickly
-                                  and respond to users feedbacks.
-                                </li>
-                              </ul>
-                            </li>
+                            {exp.responsibilities.length > 0 && (
+                              <li>
+                                Responsibilities:
+                                <ul
+                                  className="detail"
+                                  style={{ paddingLeft: "1.5rem" }}
+                                >
+                                  {exp.responsibilities.map((r) => (
+                                    <li key={r.id}>{r.description}</li>
+                                  ))}
+                                </ul>
+                              </li>
+                            )}
                           </ul>
                         </h3>
                       </Col>
                     </Row>
                   </div>
                 ),
-              },
-            ]}
-          />
+              }))}
+            />
+          )}
         </Col>
       </Row>
     </AboutMeSectionStyled>
