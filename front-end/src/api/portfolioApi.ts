@@ -131,3 +131,23 @@ export const fetchContacts = (): Promise<IContact[]> =>
 
 export const fetchStatistic = (): Promise<IStatistic> =>
   portfolioApi.get<IStatistic>('/v1/statistic').then((res) => res.data);
+
+export interface IFrontendVersion {
+  id: string;
+  key: string;
+  url: string;
+  title: string;
+  description?: string | null;
+  thumbnail?: string | null;
+  show: boolean;
+  order: number;
+  views: number;
+}
+
+export interface IFrontendVersionList {
+  totalViews: number;
+  versions: IFrontendVersion[];
+}
+
+export const fetchFrontendVersions = (): Promise<IFrontendVersionList> =>
+  portfolioApi.get<IFrontendVersionList>('/v1/frontend-version').then((res) => res.data);
