@@ -91,9 +91,6 @@ const BaseLayout: FC<BaseLayoutProps> = () => {
         minHeight: "100vh",
       }}
     >
-      <div style={{ position: "fixed", right: 10, top: 10 }}>
-        {prevScrollPos}
-      </div>
       <div>
         {breakpointCheck({ mode: "<=", breakpoint: EBreakpoints.sm }) ? (
           <div className="">
