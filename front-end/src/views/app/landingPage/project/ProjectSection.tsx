@@ -3,6 +3,7 @@ import { FC } from "react";
 import { styled } from "styled-components";
 import ProjectCard from "../../../../components/ProjectCard";
 import { openNewTabURL } from "../../../../utils/functions";
+import { isProjectOpenable, PROJECT_STATUS_LABEL } from "../../../../utils/projectStatus";
 import { useAppSelector } from "../../../../app/store";
 
 type Props = {};
@@ -44,7 +45,7 @@ const ProjectSection: FC<Props> = () => {
               lg={6}
               key={project.id}
               onClick={() =>
-                !project.inProgress &&
+                isProjectOpenable(project.status) &&
                 project.preview &&
                 openNewTabURL(project.preview, "_blank")
               }
@@ -53,7 +54,8 @@ const ProjectSection: FC<Props> = () => {
                 title={project.title}
                 detail={project.description}
                 tagList={project.tags.map((t) => t.tag)}
-                upcoming={project.inProgress}
+                statusLabel={PROJECT_STATUS_LABEL[project.status]}
+                sources={project.sources ?? []}
               />
             </Col>
           ))}
