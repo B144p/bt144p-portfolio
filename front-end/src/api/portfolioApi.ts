@@ -95,7 +95,13 @@ export interface IStatistic {
   contributions: IStatContribution[];
 }
 
-const portfolioApi = axios.create({ baseURL: import.meta.env.VITE_API_BASE_URL as string });
+export const FRONTEND_VERSION_KEY =
+  import.meta.env.VITE_FRONTEND_VERSION_KEY ?? 'bt144p-portfolio';
+
+const portfolioApi = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE_URL,
+  headers: { 'X-Frontend-Version': FRONTEND_VERSION_KEY },
+});
 
 export const fetchAboutMe = (): Promise<IAboutMe> =>
   portfolioApi.get<IAboutMe>('/v1/about-me').then((res) => res.data);
