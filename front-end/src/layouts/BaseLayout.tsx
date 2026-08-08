@@ -18,7 +18,8 @@ import { copyTextClipboard, openNewTabURL } from "../utils/functions";
 import "./scss/BaseLayout.scss";
 import { useAppDispatch, useAppSelector } from "../app/store";
 import { fetchContactsAction } from "../slices/contact/contact.slice";
-import { IContact } from "../api/portfolioApi";
+import { fetchFrontendVersionsAction } from "../slices/frontendVersion/frontendVersion.slice";
+import { FRONTEND_VERSION_KEY, IContact } from "../api/portfolioApi";
 
 const { Content } = Layout;
 
@@ -57,8 +58,14 @@ const BaseLayout: FC<BaseLayoutProps> = () => {
     ...getContactConfig(c),
   }));
 
+  const frontendVersions = useAppSelector((state) => state.frontendVersion.data);
+  const siteViews = frontendVersions?.versions.find(
+    (v) => v.key === FRONTEND_VERSION_KEY,
+  )?.views;
+
   useEffect(() => {
     dispatch(fetchContactsAction());
+    dispatch(fetchFrontendVersionsAction());
   }, [dispatch]);
 
   useEffect(() => {
@@ -84,9 +91,6 @@ const BaseLayout: FC<BaseLayoutProps> = () => {
         minHeight: "100vh",
       }}
     >
-      <div style={{ position: "fixed", right: 10, top: 10 }}>
-        {prevScrollPos}
-      </div>
       <div>
         {breakpointCheck({ mode: "<=", breakpoint: EBreakpoints.sm }) ? (
           <div className="">
@@ -178,7 +182,7 @@ const BaseLayout: FC<BaseLayoutProps> = () => {
             width: "calc(100% - 10rem)",
           }}
         >
-          BT_144p © 2024
+          BT_144p © 2024{siteViews !== undefined && ` · ${siteViews.toLocaleString()} views`}
           <BreakpointComp mode=">" breakpoint={EBreakpoints.sm}>
             <Space split style={{ fontSize: "2rem" }}>
               {contactButtons.map((contact) => (

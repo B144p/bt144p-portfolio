@@ -42,13 +42,24 @@ export interface IProjectTag {
   tag: string;
 }
 
+export interface IProjectSource {
+  id: string;
+  projectId: string;
+  title: string;
+  url: string;
+}
+
+export type TProjectStatus = 'IN_PROGRESS' | 'ACTIVE' | 'HOLD' | 'PLANNING';
+
 export interface IProject {
   id: string;
   title: string;
   description: string;
   preview?: string;
   logo?: string;
-  inProgress: boolean;
+  status: TProjectStatus;
+  order: number;
+  sources: IProjectSource[];
   tags: IProjectTag[];
 }
 
@@ -95,7 +106,13 @@ export interface IStatistic {
   contributions: IStatContribution[];
 }
 
-const portfolioApi = axios.create({ baseURL: import.meta.env.VITE_API_BASE_URL as string });
+export const FRONTEND_VERSION_KEY =
+  import.meta.env.VITE_FRONTEND_VERSION_KEY ?? 'bt144p-portfolio';
+
+const portfolioApi = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE_URL,
+  headers: { 'X-Frontend-Version': FRONTEND_VERSION_KEY },
+});
 
 export const fetchAboutMe = (): Promise<IAboutMe> =>
   portfolioApi.get<IAboutMe>('/v1/about-me').then((res) => res.data);
@@ -114,3 +131,23 @@ export const fetchContacts = (): Promise<IContact[]> =>
 
 export const fetchStatistic = (): Promise<IStatistic> =>
   portfolioApi.get<IStatistic>('/v1/statistic').then((res) => res.data);
+
+export interface IFrontendVersion {
+  id: string;
+  key: string;
+  url: string;
+  title: string;
+  description?: string | null;
+  thumbnail?: string | null;
+  show: boolean;
+  order: number;
+  views: number;
+}
+
+export interface IFrontendVersionList {
+  totalViews: number;
+  versions: IFrontendVersion[];
+}
+
+export const fetchFrontendVersions = (): Promise<IFrontendVersionList> =>
+  portfolioApi.get<IFrontendVersionList>('/v1/frontend-version').then((res) => res.data);

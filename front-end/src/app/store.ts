@@ -7,6 +7,7 @@ import experienceReducer from "../slices/experience/experience.slice";
 import portfolioProjectReducer from "../slices/portfolioProject/portfolioProject.slice";
 import contactReducer from "../slices/contact/contact.slice";
 import statisticReducer from "../slices/statistic/statistic.slice";
+import frontendVersionReducer from "../slices/frontendVersion/frontendVersion.slice";
 
 export type IStore = {
     project: IProjectSlice
@@ -20,6 +21,7 @@ const rootReducer = combineReducers({
     portfolioProject: portfolioProjectReducer,
     contact: contactReducer,
     statistic: statisticReducer,
+    frontendVersion: frontendVersionReducer,
 });
 
 export const store = configureStore({

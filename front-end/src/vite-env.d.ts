@@ -1,11 +1,8 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
-  readonly VITE_WAKATIME_SHARE_ID: string;
-  readonly VITE_WAKA_SHARE_ACTIVITY_PATH: string;
-  readonly VITE_WAKA_SHARE_LANGUAGES_PATH: string;
-  readonly VITE_WAKA_SHARE_OS_PATH: string;
-  readonly VITE_WAKA_SHARE_CONTRIBUTIONS_PATH: string;
+  readonly VITE_API_BASE_URL: string;
+  readonly VITE_FRONTEND_VERSION_KEY: string;
 }
 
 interface ImportMeta {

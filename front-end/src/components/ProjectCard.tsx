@@ -1,20 +1,28 @@
 import { ApiOutlined, BugFilled } from "@ant-design/icons";
 import React from "react";
+import { IProjectSource } from "../api/portfolioApi";
 import "./scss/ProjectCard.scss";
 
 type Props = {
   title: string;
   detail: string;
   tagList: string[];
-  upcoming?: boolean;
+  statusLabel?: string | null;
+  sources?: IProjectSource[];
 };
 
-const ProjectCard: React.FC<Props> = ({ title, detail, tagList, upcoming }) => {
+const ProjectCard: React.FC<Props> = ({
+  title,
+  detail,
+  tagList,
+  statusLabel,
+  sources = [],
+}) => {
   return (
-    <div className={`main ${upcoming ? "main-upcoming" : ""}`}>
-      <div className={`card ${upcoming ? "card-upcoming" : ""}`}>
+    <div className={`main ${statusLabel ? "main-upcoming" : ""}`}>
+      <div className={`card ${statusLabel ? "card-upcoming" : ""}`}>
         <BugFilled />
-        {upcoming && <span className="card-upcoming-text">Upcoming...</span>}
+        {statusLabel && <span className="card-upcoming-text">{statusLabel}</span>}
       </div>
       <div className="detail">
         <div className="detail-img">
@@ -32,6 +40,22 @@ const ProjectCard: React.FC<Props> = ({ title, detail, tagList, upcoming }) => {
           </div>
         ))}
       </div>
+      {sources.length > 0 && (
+        <div className="source-container">
+          {sources.map((source) => (
+            <a
+              key={source.id}
+              className="source-item"
+              href={source.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+            >
+              ↗ {source.title}
+            </a>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
