@@ -2,7 +2,7 @@
 
 import { BugFilled } from "@ant-design/icons";
 import { Divider } from "antd";
-import { FC, useEffect } from "react";
+import { FC } from "react";
 import { styled } from "styled-components";
 import { EBreakpoints } from "../../../utils/breakpoint";
 import { colors } from "../../../utils/colors";
@@ -12,12 +12,6 @@ import StatsSection from "./stats/StatsSection";
 import ProjectSection from "./project/ProjectSection";
 import { Meteors } from "../../../components/Meteors";
 import { useBreakpointCheck } from "../../../components/BreakpointComp";
-import { useAppDispatch } from "../../../app/store";
-import { fetchAboutMeAction } from "../../../slices/aboutMe/aboutMe.slice";
-import { fetchEducationAction } from "../../../slices/education/education.slice";
-import { fetchExperienceAction } from "../../../slices/experience/experience.slice";
-import { fetchPortfolioProjectsAction } from "../../../slices/portfolioProject/portfolioProject.slice";
-import { fetchStatisticAction } from "../../../slices/statistic/statistic.slice";
 
 const HeroSection = styled.section`
   min-height: 90vh;
@@ -59,16 +53,7 @@ export const DividerStyled = styled(Divider)`
 `;
 
 const LandingPage: FC = () => {
-  const dispatch = useAppDispatch();
   const breakpointCheck = useBreakpointCheck();
-
-  useEffect(() => {
-    dispatch(fetchAboutMeAction());
-    dispatch(fetchEducationAction());
-    dispatch(fetchExperienceAction());
-    dispatch(fetchPortfolioProjectsAction());
-    dispatch(fetchStatisticAction());
-  }, [dispatch]);
 
   return (
     <div>

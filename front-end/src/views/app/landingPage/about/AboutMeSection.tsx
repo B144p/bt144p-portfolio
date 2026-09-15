@@ -8,7 +8,9 @@ import reactLogo from "../../../../assets/react.svg";
 import BreakpointComp from "../../../../components/BreakpointComp";
 import { EBreakpoints } from "../../../../utils/breakpoint";
 import { colors } from "../../../../utils/colors";
-import { useAppSelector } from "../../../../app/store";
+import { useAboutMe } from "@/features/about-me/client";
+import { useEducation } from "@/features/education/client";
+import { useExperience } from "@/features/experience/client";
 
 const AboutMeSectionStyled = styled.div`
   * {
@@ -63,12 +65,9 @@ const AboutMeSectionStyled = styled.div`
 `;
 
 const AboutMeSection: FC = () => {
-  const aboutMe = useAppSelector((state) => state.aboutMe.data);
-  const aboutMeLoading = useAppSelector((state) => state.aboutMe.loading);
-  const education = useAppSelector((state) => state.education.data) ?? [];
-  const educationLoading = useAppSelector((state) => state.education.loading);
-  const experience = useAppSelector((state) => state.experience.data) ?? [];
-  const experienceLoading = useAppSelector((state) => state.experience.loading);
+  const { data: aboutMe, isPending: aboutMeLoading } = useAboutMe();
+  const { data: education = [], isPending: educationLoading } = useEducation();
+  const { data: experience = [], isPending: experienceLoading } = useExperience();
 
   const aboutSectionSpan = { xs: 24, sm: 24, md: 11, style: {} };
 

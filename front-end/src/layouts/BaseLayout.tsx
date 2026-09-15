@@ -15,10 +15,11 @@ import { EBreakpoints } from "../utils/breakpoint";
 import { colors } from "../utils/colors";
 import { copyTextClipboard, openNewTabURL } from "../utils/functions";
 import "./scss/BaseLayout.scss";
-import { useAppDispatch, useAppSelector } from "../app/store";
-import { fetchContactsAction } from "../slices/contact/contact.slice";
-import { fetchFrontendVersionsAction } from "../slices/frontendVersion/frontendVersion.slice";
-import { FRONTEND_VERSION_KEY, IContact } from "../api/portfolioApi";
+import { useContacts, type IContact } from "@/features/contact/client";
+import {
+  FRONTEND_VERSION_KEY,
+  useFrontendVersion,
+} from "@/features/frontend-version/client";
 
 const { Content, Header } = Layout;
 
@@ -46,27 +47,21 @@ const getContactConfig = (contact: IContact) => {
 };
 
 const BaseLayout: FC<BaseLayoutProps> = ({ children }) => {
-  const dispatch = useAppDispatch();
   const navbarRef = useRef<HTMLDivElement>(null);
   const [prevScrollPos, setPrevScrollPos] = useState(0);
   const [sideBarOpen, setSideBarOpen] = useState(false);
   const breakpointCheck = useBreakpointCheck();
 
-  const contacts = useAppSelector((state) => state.contact.data) ?? [];
+  const { data: contacts = [] } = useContacts();
   const contactButtons = contacts.map((c) => ({
     title: c.title,
     ...getContactConfig(c),
   }));
 
-  const frontendVersions = useAppSelector((state) => state.frontendVersion.data);
+  const { data: frontendVersions } = useFrontendVersion();
   const siteViews = frontendVersions?.versions.find(
     (v) => v.key === FRONTEND_VERSION_KEY,
   )?.views;
-
-  useEffect(() => {
-    dispatch(fetchContactsAction());
-    dispatch(fetchFrontendVersionsAction());
-  }, [dispatch]);
 
   useEffect(() => {
     const handleScroll = () => {

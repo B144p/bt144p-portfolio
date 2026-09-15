@@ -6,8 +6,7 @@ import dynamic from "next/dynamic";
 import { fromUnix } from "../../../../utils/date";
 import { FC, useMemo } from "react";
 import styled from "styled-components";
-import { IStatContribution } from "../../../../api/portfolioApi";
-import { useAppSelector } from "../../../../app/store";
+import { useStatistic, type IStatContribution } from "@/features/statistic/client";
 import { colors } from "../../../../utils/colors";
 import { numberFloatFormat } from "../../../../utils/functions";
 import {
@@ -71,8 +70,7 @@ const StatsSectionStyled = styled.div`
 const StatsSection: FC = () => {
   const breakpointCheck = useBreakpointCheck();
 
-  const statistic = useAppSelector((state) => state.statistic.data);
-  const loading = useAppSelector((state) => state.statistic.loading);
+  const { data: statistic, isPending: loading } = useStatistic();
 
   const formatDate = (unixSeconds: number) =>
     fromUnix(unixSeconds).format("D MMMM YYYY");
