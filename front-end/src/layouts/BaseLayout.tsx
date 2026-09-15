@@ -11,7 +11,7 @@ import { Header } from "antd/es/layout/layout";
 import PropTypes from "prop-types";
 import { FC, ReactNode, useEffect, useRef, useState } from "react";
 import { Outlet } from "react-router-dom";
-import BreakpointComp, { breakpointCheck } from "../components/BreakpointComp";
+import BreakpointComp, { useBreakpointCheck } from "../components/BreakpointComp";
 import { EBreakpoints } from "../utils/breakpoint";
 import { colors } from "../utils/colors";
 import { copyTextClipboard, openNewTabURL } from "../utils/functions";
@@ -49,8 +49,9 @@ const getContactConfig = (contact: IContact) => {
 const BaseLayout: FC<BaseLayoutProps> = () => {
   const dispatch = useAppDispatch();
   const navbarRef = useRef<HTMLDivElement>(null);
-  const [prevScrollPos, setPrevScrollPos] = useState(window.scrollY);
+  const [prevScrollPos, setPrevScrollPos] = useState(0);
   const [sideBarOpen, setSideBarOpen] = useState(false);
+  const breakpointCheck = useBreakpointCheck();
 
   const contacts = useAppSelector((state) => state.contact.data) ?? [];
   const contactButtons = contacts.map((c) => ({
@@ -182,7 +183,7 @@ const BaseLayout: FC<BaseLayoutProps> = () => {
             width: "calc(100% - 10rem)",
           }}
         >
-          BT_144p © 2024{siteViews !== undefined && ` · ${siteViews.toLocaleString()} views`}
+          BT_144p © 2024{siteViews !== undefined && ` · ${siteViews.toLocaleString("en-US")} views`}
           <BreakpointComp mode=">" breakpoint={EBreakpoints.sm}>
             <Space split style={{ fontSize: "2rem" }}>
               {contactButtons.map((contact) => (

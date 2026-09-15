@@ -15,7 +15,7 @@ import {
   panelColorsConfig,
   totalRowSpan,
 } from "./statsSection.model";
-import { breakpointCheck } from "../../../../components/BreakpointComp";
+import { useBreakpointCheck } from "../../../../components/BreakpointComp";
 import { EBreakpoints } from "../../../../utils/breakpoint";
 
 const ProgressRowStyled = styled(Row)`
@@ -64,6 +64,7 @@ const StatsSection: FC = () => {
   const pieOSRef = useRef(null);
   const [radarOptions, setRadarOptions] = useState<EChartsOption>(configRadar);
   const [pieOptions, setPieOptions] = useState<EChartsOption>(configPie);
+  const breakpointCheck = useBreakpointCheck();
 
   const statistic = useAppSelector((state) => state.statistic.data);
   const loading = useAppSelector((state) => state.statistic.loading);
@@ -84,9 +85,13 @@ const StatsSection: FC = () => {
     ? formatContributions(statistic.contributions)
     : {};
 
+  // Anchored to the data, never to "now": a render-time clock read would
+  // differ between the server's HTML and the browser's hydration.
   const contributionUntil = statistic?.contributions?.length
     ? moment.unix(statistic.contributions[statistic.contributions.length - 1].date).format("YYYY-MM-DD")
-    : moment().format("YYYY-MM-DD");
+    : statistic
+      ? moment.unix(statistic.endDate).format("YYYY-MM-DD")
+      : undefined;
 
   const sortedLanguages = statistic
     ? [...statistic.languages]
@@ -231,14 +236,16 @@ const StatsSection: FC = () => {
                   : "unset",
               }}
             >
-              <Calendar
-                values={contributionSource}
-                until={contributionUntil}
-                panelColors={panelColorsConfig}
-                panelAttributes={panelAttributesConfig}
-                weekLabelAttributes={undefined}
-                monthLabelAttributes={undefined}
-              />
+              {contributionUntil && (
+                <Calendar
+                  values={contributionSource}
+                  until={contributionUntil}
+                  panelColors={panelColorsConfig}
+                  panelAttributes={panelAttributesConfig}
+                  weekLabelAttributes={undefined}
+                  monthLabelAttributes={undefined}
+                />
+              )}
             </div>
           </Row>
         </>

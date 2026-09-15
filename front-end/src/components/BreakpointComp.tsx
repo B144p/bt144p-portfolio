@@ -1,40 +1,37 @@
-import { FC, useEffect, useState } from "react";
+import { Grid } from "antd";
+import { FC, ReactNode } from "react";
 import { EBreakpoints } from "../utils/breakpoint";
 
 type Props = {
   mode: ">" | "<" | ">=" | "<=";
   breakpoint: EBreakpoints;
-  // children: JSX.Element;
 };
 
-export const useWindowWidth = () => {
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  useEffect(() => {
-    let resizeTimer: NodeJS.Timeout;
-    const handleResize = () => {
-      // avoid excessive re-renders
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(() => {
-        setWindowWidth(window.innerWidth);
-      }, 100);
-    };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-  return windowWidth;
+const screenKey: Record<EBreakpoints, "sm" | "md" | "lg" | "xl" | "xxl"> = {
+  [EBreakpoints.sm]: "sm",
+  [EBreakpoints.md]: "md",
+  [EBreakpoints.lg]: "lg",
+  [EBreakpoints.xl]: "xl",
+  [EBreakpoints.xxl]: "xxl",
 };
 
-export const breakpointCheck = ({ mode, breakpoint }: Props): boolean => {
-  return eval(window.innerWidth + mode + breakpoint);
+// antd's screens map is empty until mounted (always on the server), so an
+// unknown width is treated as desktop — server and first client render agree.
+export const useBreakpointCheck = () => {
+  const screens = Grid.useBreakpoint();
+  return ({ mode, breakpoint }: Props): boolean => {
+    const atLeast = screens[screenKey[breakpoint]] ?? true;
+    return mode.startsWith(">") ? atLeast : !atLeast;
+  };
 };
 
-const BreakpointComp: FC<Props & { children: React.ReactNode }> = ({
+const BreakpointComp: FC<Props & { children: ReactNode }> = ({
   mode,
   breakpoint,
   children,
 }) => {
-  const windowWidth = useWindowWidth();
-  return eval(windowWidth + mode + breakpoint) ? children : null;
+  const breakpointCheck = useBreakpointCheck();
+  return breakpointCheck({ mode, breakpoint }) ? children : null;
 };
 
 export default BreakpointComp;

@@ -9,7 +9,7 @@ import AboutMeSection from "./about/AboutMeSection";
 import StatsSection from "./stats/StatsSection";
 import ProjectSection from "./project/ProjectSection";
 import { Meteors } from "../../../components/Meteors";
-import { breakpointCheck } from "../../../components/BreakpointComp";
+import { useBreakpointCheck } from "../../../components/BreakpointComp";
 import { useAppDispatch } from "../../../app/store";
 import { fetchAboutMeAction } from "../../../slices/aboutMe/aboutMe.slice";
 import { fetchEducationAction } from "../../../slices/education/education.slice";
@@ -58,6 +58,7 @@ export const DividerStyled = styled(Divider)`
 
 const LandingPage: FC = () => {
   const dispatch = useAppDispatch();
+  const breakpointCheck = useBreakpointCheck();
 
   useEffect(() => {
     dispatch(fetchAboutMeAction());
