@@ -29,6 +29,7 @@ The app renders its content from port-server, so run that first.
    | --- | --- |
    | `API_URL` | Server-only. The backend base URL used by `src/lib/backend.ts`. Never prefix it with `NEXT_PUBLIC_`. |
    | `PROXY_SHARED_SECRET` | Server-only. Must match port-server's, so `app/api/*` can forward the visitor's real IP for view counting. Leave unset locally if port-server's is unset. |
+   | `TRUST_FORWARDED_FOR` | Optional. The visitor IP comes from `X-Forwarded-For`, trusted automatically on Vercel (which overwrites it). Set `true` only behind another proxy that sets it; otherwise it's ignored because a visitor could spoof it. |
    | `NEXT_PUBLIC_FRONTEND_VERSION_KEY` | This site's `FrontendVersion.key` in port-server (default `bt144p-portfolio`). |
 
 3. Run the dev server (port-server also defaults to 3000, so pick another port):
