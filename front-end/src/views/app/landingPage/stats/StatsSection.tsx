@@ -3,7 +3,7 @@
 import { Col, Progress, Row, Skeleton } from "antd";
 import type { EChartsOption } from "echarts-for-react";
 import dynamic from "next/dynamic";
-import moment from "moment";
+import { fromUnix } from "../../../../utils/date";
 import { FC, useMemo } from "react";
 import styled from "styled-components";
 import { IStatContribution } from "../../../../api/portfolioApi";
@@ -75,13 +75,13 @@ const StatsSection: FC = () => {
   const loading = useAppSelector((state) => state.statistic.loading);
 
   const formatDate = (unixSeconds: number) =>
-    moment.unix(unixSeconds).format("D MMMM YYYY");
+    fromUnix(unixSeconds).format("D MMMM YYYY");
 
   const formatContributions = (contributions: IStatContribution[]) =>
     contributions.reduce((acc, c) => {
       if (c.totalSeconds) {
         const level = Math.ceil(c.totalSeconds / (3 * 3600));
-        acc[moment.unix(c.date).format("YYYY-MM-DD")] = Math.min(level, 4);
+        acc[fromUnix(c.date).format("YYYY-MM-DD")] = Math.min(level, 4);
       }
       return acc;
     }, {} as Record<string, number>);
@@ -93,9 +93,9 @@ const StatsSection: FC = () => {
   // Anchored to the data, never to "now": a render-time clock read would
   // differ between the server's HTML and the browser's hydration.
   const contributionUntil = statistic?.contributions?.length
-    ? moment.unix(statistic.contributions[statistic.contributions.length - 1].date).format("YYYY-MM-DD")
+    ? fromUnix(statistic.contributions[statistic.contributions.length - 1].date).format("YYYY-MM-DD")
     : statistic
-      ? moment.unix(statistic.endDate).format("YYYY-MM-DD")
+      ? fromUnix(statistic.endDate).format("YYYY-MM-DD")
       : undefined;
 
   const sortedLanguages = useMemo(

@@ -1,7 +1,7 @@
 "use client";
 
 import { Col, Divider, Row, Skeleton, Timeline } from "antd";
-import moment from "moment";
+import { fromUnix } from "../../../../utils/date";
 import { FC } from "react";
 import { styled } from "styled-components";
 import reactLogo from "../../../../assets/react.svg";
@@ -107,9 +107,9 @@ const AboutMeSection: FC = () => {
                 children: (
                   <div>
                     <b className="time-range">
-                      {moment.unix(edu.startDate).format("YYYY")} -{" "}
+                      {fromUnix(edu.startDate).format("YYYY")} -{" "}
                       {edu.endDate
-                        ? moment.unix(edu.endDate).format("YYYY")
+                        ? fromUnix(edu.endDate).format("YYYY")
                         : "Present"}
                     </b>
                     <Row justify="center">
@@ -165,11 +165,11 @@ const AboutMeSection: FC = () => {
                 children: (
                   <div>
                     <b className="time-range">
-                      {moment.unix(exp.startDate).format("MMM YYYY")} -{" "}
+                      {fromUnix(exp.startDate).format("MMM YYYY")} -{" "}
                       {exp.endDate
                         ? (() => {
-                            const start = moment.unix(exp.startDate);
-                            const end = moment.unix(exp.endDate);
+                            const start = fromUnix(exp.startDate);
+                            const end = fromUnix(exp.endDate);
                             const years = end.diff(start, "years");
                             const months = end.diff(
                               start.clone().add(years, "years"),
