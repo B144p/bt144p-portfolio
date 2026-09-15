@@ -1,3 +1,5 @@
+"use client";
+
 import { Col, Row, Skeleton } from "antd";
 import { FC } from "react";
 import { styled } from "styled-components";
@@ -6,11 +8,9 @@ import { openNewTabURL } from "../../../../utils/functions";
 import { isProjectOpenable, PROJECT_STATUS_LABEL } from "../../../../utils/projectStatus";
 import { useAppSelector } from "../../../../app/store";
 
-type Props = {};
-
 const ProjectSectionStyled = styled.div``;
 
-const ProjectSection: FC<Props> = () => {
+const ProjectSection: FC = () => {
   const projects = useAppSelector((state) => state.portfolioProject.data) ?? [];
   const loading = useAppSelector((state) => state.portfolioProject.loading);
 

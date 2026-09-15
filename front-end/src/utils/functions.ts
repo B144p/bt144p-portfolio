@@ -30,7 +30,7 @@ export const getDataFromCache = (storageName: string) => {
 };
 
 export const storeCacheData = (
-  data: Record<string, any>,
+  data: Record<string, unknown>,
   storageName: string,
   expireHour: number = 1
 ) => {

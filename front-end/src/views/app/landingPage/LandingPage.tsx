@@ -1,3 +1,5 @@
+"use client";
+
 import { BugFilled } from "@ant-design/icons";
 import { Divider } from "antd";
 import { FC, useEffect } from "react";
@@ -22,7 +24,7 @@ const HeroSection = styled.section`
   width: 100vw;
   box-shadow: inset 0px -7.5rem 7.5rem 0px ${colors.background};
 
-  background-image: url(${headerImg});
+  background-image: url(${headerImg.src});
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

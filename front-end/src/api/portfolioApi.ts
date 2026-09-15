@@ -107,10 +107,10 @@ export interface IStatistic {
 }
 
 export const FRONTEND_VERSION_KEY =
-  import.meta.env.VITE_FRONTEND_VERSION_KEY ?? 'bt144p-portfolio';
+  process.env.NEXT_PUBLIC_FRONTEND_VERSION_KEY ?? 'bt144p-portfolio';
 
 const portfolioApi = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
   headers: { 'X-Frontend-Version': FRONTEND_VERSION_KEY },
 });
 

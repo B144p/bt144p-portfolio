@@ -1,3 +1,5 @@
+"use client";
+
 import {
   BugFilled,
   GithubFilled,
@@ -7,10 +9,7 @@ import {
   PhoneFilled,
 } from "@ant-design/icons";
 import { FloatButton, Layout, Row, Space, Tooltip } from "antd";
-import { Header } from "antd/es/layout/layout";
-import PropTypes from "prop-types";
 import { FC, ReactNode, useEffect, useRef, useState } from "react";
-import { Outlet } from "react-router-dom";
 import BreakpointComp, { useBreakpointCheck } from "../components/BreakpointComp";
 import { EBreakpoints } from "../utils/breakpoint";
 import { colors } from "../utils/colors";
@@ -21,7 +20,7 @@ import { fetchContactsAction } from "../slices/contact/contact.slice";
 import { fetchFrontendVersionsAction } from "../slices/frontendVersion/frontendVersion.slice";
 import { FRONTEND_VERSION_KEY, IContact } from "../api/portfolioApi";
 
-const { Content } = Layout;
+const { Content, Header } = Layout;
 
 interface BaseLayoutProps {
   children?: ReactNode;
@@ -46,7 +45,7 @@ const getContactConfig = (contact: IContact) => {
   return { icon: <LinkOutlined />, action: () => openNewTabURL(contact.url) };
 };
 
-const BaseLayout: FC<BaseLayoutProps> = () => {
+const BaseLayout: FC<BaseLayoutProps> = ({ children }) => {
   const dispatch = useAppDispatch();
   const navbarRef = useRef<HTMLDivElement>(null);
   const [prevScrollPos, setPrevScrollPos] = useState(0);
@@ -99,7 +98,7 @@ const BaseLayout: FC<BaseLayoutProps> = () => {
               <input
                 type="checkbox"
                 id="burger"
-                onClick={() => setSideBarOpen((prev) => !prev)}
+                onChange={() => setSideBarOpen((prev) => !prev)}
                 checked={sideBarOpen}
               />
               <span />
@@ -159,7 +158,7 @@ const BaseLayout: FC<BaseLayoutProps> = () => {
           justifyContent: "center",
         }}
       >
-        <Outlet />
+        {children}
       </Content>
       <footer
         style={{
@@ -216,10 +215,6 @@ const BaseLayout: FC<BaseLayoutProps> = () => {
       </BreakpointComp>
     </Layout>
   );
-};
-
-BaseLayout.propTypes = {
-  children: PropTypes.node,
 };
 
 export default BaseLayout;

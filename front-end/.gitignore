@@ -35,3 +35,8 @@ yarn.lock
 # Context
 /docs/private
 /requirements
+
+# next.js
+.next
+next-env.d.ts
+*.tsbuildinfo

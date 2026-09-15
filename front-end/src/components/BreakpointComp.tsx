@@ -1,3 +1,5 @@
+"use client";
+
 import { Grid } from "antd";
 import { FC, ReactNode } from "react";
 import { EBreakpoints } from "../utils/breakpoint";

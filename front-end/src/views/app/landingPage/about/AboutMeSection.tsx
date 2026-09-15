@@ -1,3 +1,5 @@
+"use client";
+
 import { Col, Divider, Row, Skeleton, Timeline } from "antd";
 import moment from "moment";
 import { FC } from "react";
@@ -112,7 +114,7 @@ const AboutMeSection: FC = () => {
                     </b>
                     <Row justify="center">
                       <Col className="timeline-logo-col" span={4}>
-                        <img src={reactLogo} alt="" />
+                        <img src={reactLogo.src} alt="" />
                       </Col>
                       <Col span={20}>
                         <h2>
@@ -189,7 +191,7 @@ const AboutMeSection: FC = () => {
                     </b>
                     <Row justify="center">
                       <Col className="timeline-logo-col" span={4}>
-                        <img src={reactLogo} alt="" />
+                        <img src={reactLogo.src} alt="" />
                       </Col>
                       <Col span={20}>
                         <h2>{exp.company}</h2>

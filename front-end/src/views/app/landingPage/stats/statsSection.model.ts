@@ -47,7 +47,11 @@ export const configRadar = {
 export const configPie = {
   tooltip: {
     trigger: "item",
-    formatter: (params: any) => {
+    formatter: (params: {
+      marker: string;
+      percent: number;
+      data: { name: string; text: string };
+    }) => {
       const { data, percent } = params;
       return `${params.marker} ${data.name} : ${data.text} (${percent}%)`;
     },

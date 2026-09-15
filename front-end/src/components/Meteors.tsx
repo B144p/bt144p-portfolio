@@ -1,4 +1,6 @@
-import { CSSProperties, FC, useEffect, useState } from "react";
+"use client";
+
+import { CSSProperties, FC, useState, useSyncExternalStore } from "react";
 import "./scss/meteors.scss";
 
 type Props = { number?: number };
@@ -10,24 +12,23 @@ const randomMeteorStyle = (): CSSProperties => ({
   animationDuration: `${Math.floor(Math.random() * 8 + 2)}s`,
 });
 
-export const Meteors: FC<Props> = ({ number = 20 }) => {
-  // Randomized after mount: random values generated during render would
-  // never match between the server's HTML and the browser's hydration.
-  const [styles, setStyles] = useState<CSSProperties[]>([]);
-
-  useEffect(() => {
-    setStyles(Array.from({ length: number || 20 }, randomMeteorStyle));
-  }, [number]);
-
+const MeteorField: FC<{ count: number }> = ({ count }) => {
+  const [styles] = useState(() => Array.from({ length: count }, randomMeteorStyle));
   return (
     <>
       {styles.map((style, idx) => (
-        <span
-          key={"meteor" + idx}
-          className="meteor meteor-animation"
-          style={style}
-        />
+        <span key={"meteor" + idx} className="meteor meteor-animation" style={style} />
       ))}
     </>
   );
+};
+
+const subscribeNever = () => () => {};
+
+export const Meteors: FC<Props> = ({ number = 20 }) => {
+  // Random positions can't match between the server's HTML and hydration,
+  // so the field only renders once mounted in the browser.
+  const mounted = useSyncExternalStore(subscribeNever, () => true, () => false);
+  const count = number || 20;
+  return mounted ? <MeteorField key={count} count={count} /> : null;
 };

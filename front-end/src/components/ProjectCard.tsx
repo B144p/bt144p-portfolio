@@ -1,3 +1,5 @@
+"use client";
+
 import { ApiOutlined, BugFilled } from "@ant-design/icons";
 import React from "react";
 import { IProjectSource } from "../api/portfolioApi";
