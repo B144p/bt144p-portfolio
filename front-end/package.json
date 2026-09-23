@@ -2,6 +2,7 @@
   "name": "front-end",
   "private": true,
   "version": "0.0.0",
+  "packageManager": "pnpm@10.13.1",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -38,6 +39,11 @@
       "allowedVersions": {
         "react-github-contribution-calendar>react": "19"
       }
-    }
+    },
+    "ignoredBuiltDependencies": [
+      "@parcel/watcher",
+      "sharp",
+      "unrs-resolver"
+    ]
   }
 }
