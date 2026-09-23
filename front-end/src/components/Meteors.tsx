@@ -10,6 +10,12 @@ const randomMeteorStyle = (): CSSProperties => ({
   top: `${Math.floor(Math.random() * 60)}vh`,
   animationDelay: `${Math.random() * 0.6 + 0.2}s`,
   animationDuration: `${Math.floor(Math.random() * 8 + 2)}s`,
+  // rotate steers the fall direction (see meteors.scss's ::before trail +
+  // the `meteor` keyframe's translateX — rotating the element also rotates
+  // the axis translateX moves along). 270deg is straight down; each meteor
+  // leans 0-14deg past that, same direction, like rain caught by a steady
+  // crosswind rather than falling perfectly straight.
+  rotate: `${270 + Math.random() * 14}deg`,
 });
 
 const MeteorField: FC<{ count: number }> = ({ count }) => {
