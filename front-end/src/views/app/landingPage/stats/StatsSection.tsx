@@ -1,11 +1,12 @@
+"use client";
+
 import { Col, Progress, Row, Skeleton } from "antd";
-import ReactEChart, { EChartsOption } from "echarts-for-react";
-import moment from "moment";
-import { FC, useEffect, useRef, useState } from "react";
-import Calendar from "react-github-contribution-calendar";
+import type { EChartsOption } from "echarts-for-react";
+import dynamic from "next/dynamic";
+import { fromUnix } from "../../../../utils/date";
+import { FC, useMemo } from "react";
 import styled from "styled-components";
-import { IStatContribution } from "../../../../api/portfolioApi";
-import { useAppSelector } from "../../../../app/store";
+import { useStatistic, type IStatContribution } from "@/features/statistic/client";
 import { colors } from "../../../../utils/colors";
 import { numberFloatFormat } from "../../../../utils/functions";
 import {
@@ -15,8 +16,15 @@ import {
   panelColorsConfig,
   totalRowSpan,
 } from "./statsSection.model";
-import { breakpointCheck } from "../../../../components/BreakpointComp";
+import { useBreakpointCheck } from "../../../../components/BreakpointComp";
 import { EBreakpoints } from "../../../../utils/breakpoint";
+
+// Both render browser-measured canvas/SVG (echarts, react-measure) and the
+// calendar lays out weeks in the local timezone, so they only render client-side.
+const ReactEChart = dynamic(() => import("echarts-for-react"), { ssr: false });
+const Calendar = dynamic(() => import("react-github-contribution-calendar"), {
+  ssr: false,
+});
 
 const ProgressRowStyled = styled(Row)`
   color: ${colors.primaryText};
@@ -60,22 +68,18 @@ const StatsSectionStyled = styled.div`
 `;
 
 const StatsSection: FC = () => {
-  const radarLangRef = useRef(null);
-  const pieOSRef = useRef(null);
-  const [radarOptions, setRadarOptions] = useState<EChartsOption>(configRadar);
-  const [pieOptions, setPieOptions] = useState<EChartsOption>(configPie);
+  const breakpointCheck = useBreakpointCheck();
 
-  const statistic = useAppSelector((state) => state.statistic.data);
-  const loading = useAppSelector((state) => state.statistic.loading);
+  const { data: statistic, isPending: loading } = useStatistic();
 
   const formatDate = (unixSeconds: number) =>
-    moment.unix(unixSeconds).format("D MMMM YYYY");
+    fromUnix(unixSeconds).format("D MMMM YYYY");
 
   const formatContributions = (contributions: IStatContribution[]) =>
     contributions.reduce((acc, c) => {
       if (c.totalSeconds) {
         const level = Math.ceil(c.totalSeconds / (3 * 3600));
-        acc[moment.unix(c.date).format("YYYY-MM-DD")] = Math.min(level, 4);
+        acc[fromUnix(c.date).format("YYYY-MM-DD")] = Math.min(level, 4);
       }
       return acc;
     }, {} as Record<string, number>);
@@ -84,57 +88,60 @@ const StatsSection: FC = () => {
     ? formatContributions(statistic.contributions)
     : {};
 
+  // Anchored to the data, never to "now": a render-time clock read would
+  // differ between the server's HTML and the browser's hydration.
   const contributionUntil = statistic?.contributions?.length
-    ? moment.unix(statistic.contributions[statistic.contributions.length - 1].date).format("YYYY-MM-DD")
-    : moment().format("YYYY-MM-DD");
+    ? fromUnix(statistic.contributions[statistic.contributions.length - 1].date).format("YYYY-MM-DD")
+    : statistic
+      ? fromUnix(statistic.endDate).format("YYYY-MM-DD")
+      : undefined;
 
-  const sortedLanguages = statistic
-    ? [...statistic.languages]
-        .sort((a, b) => b.totalSeconds - a.totalSeconds)
-        .slice(0, 6)
-    : [];
+  const sortedLanguages = useMemo(
+    () =>
+      statistic
+        ? [...statistic.languages]
+            .sort((a, b) => b.totalSeconds - a.totalSeconds)
+            .slice(0, 6)
+        : [],
+    [statistic],
+  );
 
-  useEffect(() => {
-    if (statistic?.languages?.length) {
-      const sorted = [...statistic.languages]
-        .sort((a, b) => b.totalSeconds - a.totalSeconds)
-        .slice(0, 6);
-      const scale = (v: number) => Math.cbrt(v);
-      const scaledMax = scale(sorted[0].percent) * 1.1;
-      setRadarOptions((prev: EChartsOption) => ({
-        ...prev,
-        radar: {
-          indicator: sorted.map((lang) => ({
-            name: lang.language,
-            max: scaledMax,
-          })),
+  const radarOptions = useMemo<EChartsOption>(() => {
+    if (!sortedLanguages.length) return configRadar;
+    const scale = (v: number) => Math.cbrt(v);
+    const scaledMax = scale(sortedLanguages[0].percent) * 1.1;
+    return {
+      ...configRadar,
+      radar: {
+        indicator: sortedLanguages.map((lang) => ({
+          name: lang.language,
+          max: scaledMax,
+        })),
+      },
+      series: [
+        {
+          type: "radar",
+          symbol: "none",
+          data: [{ value: sortedLanguages.map((lang) => scale(lang.percent)) }],
+          areaStyle: { opacity: 0.375 },
         },
-        series: [
-          {
-            type: "radar",
-            symbol: "none",
-            data: [{ value: sorted.map((lang) => scale(lang.percent)) }],
-            areaStyle: { opacity: 0.375 },
-          },
-        ],
-      }));
-    }
-  }, [statistic]);
+      ],
+    };
+  }, [sortedLanguages]);
 
-  useEffect(() => {
-    if (statistic?.operatingSystems?.length) {
-      setPieOptions((prev: EChartsOption) => {
-        const series = prev.series.map((serie: any) => ({
-          ...serie,
-          data: statistic.operatingSystems.map((os) => ({
-            name: os.os,
-            value: os.percent,
-            text: os.humanReadable,
-          })),
-        }));
-        return { ...prev, series };
-      });
-    }
+  const pieOptions = useMemo<EChartsOption>(() => {
+    if (!statistic?.operatingSystems?.length) return configPie;
+    return {
+      ...configPie,
+      series: configPie.series.map((serie) => ({
+        ...serie,
+        data: statistic.operatingSystems.map((os) => ({
+          name: os.os,
+          value: os.percent,
+          text: os.humanReadable,
+        })),
+      })),
+    };
   }, [statistic]);
 
   return (
@@ -169,7 +176,6 @@ const StatsSection: FC = () => {
               <ReactEChart
                 style={{ width: "100%" }}
                 option={radarOptions}
-                ref={radarLangRef}
               />
             </Col>
             <Col sm={12} xs={24}>
@@ -199,7 +205,6 @@ const StatsSection: FC = () => {
               <ReactEChart
                 style={{ width: "100%" }}
                 option={pieOptions}
-                ref={pieOSRef}
               />
             </Col>
             <Col sm={12} xs={24}>
@@ -231,14 +236,16 @@ const StatsSection: FC = () => {
                   : "unset",
               }}
             >
-              <Calendar
-                values={contributionSource}
-                until={contributionUntil}
-                panelColors={panelColorsConfig}
-                panelAttributes={panelAttributesConfig}
-                weekLabelAttributes={undefined}
-                monthLabelAttributes={undefined}
-              />
+              {contributionUntil && (
+                <Calendar
+                  values={contributionSource}
+                  until={contributionUntil}
+                  panelColors={panelColorsConfig}
+                  panelAttributes={panelAttributesConfig}
+                  weekLabelAttributes={undefined}
+                  monthLabelAttributes={undefined}
+                />
+              )}
             </div>
           </Row>
         </>

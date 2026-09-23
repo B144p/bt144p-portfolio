@@ -1,6 +1,8 @@
+"use client";
+
 import { BugFilled } from "@ant-design/icons";
 import { Divider } from "antd";
-import { FC, useEffect } from "react";
+import { FC } from "react";
 import { styled } from "styled-components";
 import { EBreakpoints } from "../../../utils/breakpoint";
 import { colors } from "../../../utils/colors";
@@ -9,20 +11,14 @@ import AboutMeSection from "./about/AboutMeSection";
 import StatsSection from "./stats/StatsSection";
 import ProjectSection from "./project/ProjectSection";
 import { Meteors } from "../../../components/Meteors";
-import { breakpointCheck } from "../../../components/BreakpointComp";
-import { useAppDispatch } from "../../../app/store";
-import { fetchAboutMeAction } from "../../../slices/aboutMe/aboutMe.slice";
-import { fetchEducationAction } from "../../../slices/education/education.slice";
-import { fetchExperienceAction } from "../../../slices/experience/experience.slice";
-import { fetchPortfolioProjectsAction } from "../../../slices/portfolioProject/portfolioProject.slice";
-import { fetchStatisticAction } from "../../../slices/statistic/statistic.slice";
+import { useBreakpointCheck } from "../../../components/BreakpointComp";
 
 const HeroSection = styled.section`
   min-height: 90vh;
   width: 100vw;
   box-shadow: inset 0px -7.5rem 7.5rem 0px ${colors.background};
 
-  background-image: url(${headerImg});
+  background-image: url(${headerImg.src});
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -57,15 +53,7 @@ export const DividerStyled = styled(Divider)`
 `;
 
 const LandingPage: FC = () => {
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    dispatch(fetchAboutMeAction());
-    dispatch(fetchEducationAction());
-    dispatch(fetchExperienceAction());
-    dispatch(fetchPortfolioProjectsAction());
-    dispatch(fetchStatisticAction());
-  }, [dispatch]);
+  const breakpointCheck = useBreakpointCheck();
 
   return (
     <div>

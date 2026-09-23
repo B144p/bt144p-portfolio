@@ -1,0 +1,34 @@
+import { queryOptions, useQuery } from "@tanstack/react-query";
+import { frontendVersionKeys } from "../keys";
+import type { IFrontendVersionList } from "../types";
+
+export type { IFrontendVersion, IFrontendVersionList } from "../types";
+export { FRONTEND_VERSION_KEY } from "../keys";
+
+// Runs only when the server prefetch didn't already hydrate this key.
+// Always goes through this app's own route handler, never port-server.
+async function fetchFrontendVersion(): Promise<IFrontendVersionList> {
+  const res = await fetch("/api/frontend-version");
+  if (!res.ok) throw new Error(`LINK FAILURE // ${res.status} /frontend-version`);
+  return res.json() as Promise<IFrontendVersionList>;
+}
+
+// staleTime: 0 (unlike every other feature, which inherits the client's
+// staleTime: Infinity default) is deliberate: this is the one query that's
+// also how a visit gets counted. Hydrated SSR data is immediately stale, so
+// mount triggers one real refetch through /api/frontend-version — carrying
+// the visitor's IP for port-server's view-count dedupe — instead of silently
+// reusing the server's (view-count-silent) prefetch forever.
+export const frontendVersionQuery = queryOptions({
+  queryKey: frontendVersionKeys.all,
+  queryFn: fetchFrontendVersion,
+  staleTime: 0,
+  // Without these, a tab refocus or a network reconnect would each fire
+  // another counted ping, turning "one view per visit" into "one per refocus."
+  refetchOnWindowFocus: false,
+  refetchOnReconnect: false,
+});
+
+export function useFrontendVersion() {
+  return useQuery(frontendVersionQuery);
+}

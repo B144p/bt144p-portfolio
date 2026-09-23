@@ -1,12 +1,16 @@
+"use client";
+
 import { Col, Divider, Row, Skeleton, Timeline } from "antd";
-import moment from "moment";
+import { fromUnix } from "../../../../utils/date";
 import { FC } from "react";
 import { styled } from "styled-components";
 import reactLogo from "../../../../assets/react.svg";
 import BreakpointComp from "../../../../components/BreakpointComp";
 import { EBreakpoints } from "../../../../utils/breakpoint";
 import { colors } from "../../../../utils/colors";
-import { useAppSelector } from "../../../../app/store";
+import { useAboutMe } from "@/features/about-me/client";
+import { useEducation } from "@/features/education/client";
+import { useExperience } from "@/features/experience/client";
 
 const AboutMeSectionStyled = styled.div`
   * {
@@ -61,12 +65,9 @@ const AboutMeSectionStyled = styled.div`
 `;
 
 const AboutMeSection: FC = () => {
-  const aboutMe = useAppSelector((state) => state.aboutMe.data);
-  const aboutMeLoading = useAppSelector((state) => state.aboutMe.loading);
-  const education = useAppSelector((state) => state.education.data) ?? [];
-  const educationLoading = useAppSelector((state) => state.education.loading);
-  const experience = useAppSelector((state) => state.experience.data) ?? [];
-  const experienceLoading = useAppSelector((state) => state.experience.loading);
+  const { data: aboutMe, isPending: aboutMeLoading } = useAboutMe();
+  const { data: education = [], isPending: educationLoading } = useEducation();
+  const { data: experience = [], isPending: experienceLoading } = useExperience();
 
   const aboutSectionSpan = { xs: 24, sm: 24, md: 11, style: {} };
 
@@ -105,14 +106,14 @@ const AboutMeSection: FC = () => {
                 children: (
                   <div>
                     <b className="time-range">
-                      {moment.unix(edu.startDate).format("YYYY")} -{" "}
+                      {fromUnix(edu.startDate).format("YYYY")} -{" "}
                       {edu.endDate
-                        ? moment.unix(edu.endDate).format("YYYY")
+                        ? fromUnix(edu.endDate).format("YYYY")
                         : "Present"}
                     </b>
                     <Row justify="center">
                       <Col className="timeline-logo-col" span={4}>
-                        <img src={reactLogo} alt="" />
+                        <img src={reactLogo.src} alt="" />
                       </Col>
                       <Col span={20}>
                         <h2>
@@ -163,11 +164,11 @@ const AboutMeSection: FC = () => {
                 children: (
                   <div>
                     <b className="time-range">
-                      {moment.unix(exp.startDate).format("MMM YYYY")} -{" "}
+                      {fromUnix(exp.startDate).format("MMM YYYY")} -{" "}
                       {exp.endDate
                         ? (() => {
-                            const start = moment.unix(exp.startDate);
-                            const end = moment.unix(exp.endDate);
+                            const start = fromUnix(exp.startDate);
+                            const end = fromUnix(exp.endDate);
                             const years = end.diff(start, "years");
                             const months = end.diff(
                               start.clone().add(years, "years"),
@@ -189,7 +190,7 @@ const AboutMeSection: FC = () => {
                     </b>
                     <Row justify="center">
                       <Col className="timeline-logo-col" span={4}>
-                        <img src={reactLogo} alt="" />
+                        <img src={reactLogo.src} alt="" />
                       </Col>
                       <Col span={20}>
                         <h2>{exp.company}</h2>

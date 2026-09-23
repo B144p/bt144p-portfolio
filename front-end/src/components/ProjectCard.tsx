@@ -1,6 +1,8 @@
+"use client";
+
 import { ApiOutlined, BugFilled } from "@ant-design/icons";
 import React from "react";
-import { IProjectSource } from "../api/portfolioApi";
+import type { IProjectSource } from "@/features/project/client";
 import "./scss/ProjectCard.scss";
 
 type Props = {

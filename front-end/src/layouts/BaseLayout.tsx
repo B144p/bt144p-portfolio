@@ -1,3 +1,5 @@
+"use client";
+
 import {
   BugFilled,
   GithubFilled,
@@ -7,21 +9,19 @@ import {
   PhoneFilled,
 } from "@ant-design/icons";
 import { FloatButton, Layout, Row, Space, Tooltip } from "antd";
-import { Header } from "antd/es/layout/layout";
-import PropTypes from "prop-types";
 import { FC, ReactNode, useEffect, useRef, useState } from "react";
-import { Outlet } from "react-router-dom";
-import BreakpointComp, { breakpointCheck } from "../components/BreakpointComp";
+import BreakpointComp, { useBreakpointCheck } from "../components/BreakpointComp";
 import { EBreakpoints } from "../utils/breakpoint";
 import { colors } from "../utils/colors";
 import { copyTextClipboard, openNewTabURL } from "../utils/functions";
 import "./scss/BaseLayout.scss";
-import { useAppDispatch, useAppSelector } from "../app/store";
-import { fetchContactsAction } from "../slices/contact/contact.slice";
-import { fetchFrontendVersionsAction } from "../slices/frontendVersion/frontendVersion.slice";
-import { FRONTEND_VERSION_KEY, IContact } from "../api/portfolioApi";
+import { useContacts, type IContact } from "@/features/contact/client";
+import {
+  FRONTEND_VERSION_KEY,
+  useFrontendVersion,
+} from "@/features/frontend-version/client";
 
-const { Content } = Layout;
+const { Content, Header } = Layout;
 
 interface BaseLayoutProps {
   children?: ReactNode;
@@ -46,27 +46,22 @@ const getContactConfig = (contact: IContact) => {
   return { icon: <LinkOutlined />, action: () => openNewTabURL(contact.url) };
 };
 
-const BaseLayout: FC<BaseLayoutProps> = () => {
-  const dispatch = useAppDispatch();
+const BaseLayout: FC<BaseLayoutProps> = ({ children }) => {
   const navbarRef = useRef<HTMLDivElement>(null);
-  const [prevScrollPos, setPrevScrollPos] = useState(window.scrollY);
+  const [prevScrollPos, setPrevScrollPos] = useState(0);
   const [sideBarOpen, setSideBarOpen] = useState(false);
+  const breakpointCheck = useBreakpointCheck();
 
-  const contacts = useAppSelector((state) => state.contact.data) ?? [];
+  const { data: contacts = [] } = useContacts();
   const contactButtons = contacts.map((c) => ({
     title: c.title,
     ...getContactConfig(c),
   }));
 
-  const frontendVersions = useAppSelector((state) => state.frontendVersion.data);
+  const { data: frontendVersions } = useFrontendVersion();
   const siteViews = frontendVersions?.versions.find(
     (v) => v.key === FRONTEND_VERSION_KEY,
   )?.views;
-
-  useEffect(() => {
-    dispatch(fetchContactsAction());
-    dispatch(fetchFrontendVersionsAction());
-  }, [dispatch]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -98,7 +93,7 @@ const BaseLayout: FC<BaseLayoutProps> = () => {
               <input
                 type="checkbox"
                 id="burger"
-                onClick={() => setSideBarOpen((prev) => !prev)}
+                onChange={() => setSideBarOpen((prev) => !prev)}
                 checked={sideBarOpen}
               />
               <span />
@@ -158,7 +153,7 @@ const BaseLayout: FC<BaseLayoutProps> = () => {
           justifyContent: "center",
         }}
       >
-        <Outlet />
+        {children}
       </Content>
       <footer
         style={{
@@ -182,7 +177,7 @@ const BaseLayout: FC<BaseLayoutProps> = () => {
             width: "calc(100% - 10rem)",
           }}
         >
-          BT_144p © 2024{siteViews !== undefined && ` · ${siteViews.toLocaleString()} views`}
+          BT_144p © 2024{siteViews !== undefined && ` · ${siteViews.toLocaleString("en-US")} views`}
           <BreakpointComp mode=">" breakpoint={EBreakpoints.sm}>
             <Space split style={{ fontSize: "2rem" }}>
               {contactButtons.map((contact) => (
@@ -215,10 +210,6 @@ const BaseLayout: FC<BaseLayoutProps> = () => {
       </BreakpointComp>
     </Layout>
   );
-};
-
-BaseLayout.propTypes = {
-  children: PropTypes.node,
 };
 
 export default BaseLayout;
