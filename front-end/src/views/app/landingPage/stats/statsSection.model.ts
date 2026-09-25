@@ -10,6 +10,12 @@ export const totalRowSpan = {
   xs: 24,
 };
 
+// Tailwind grid equivalent of totalRowSpan above: stacked full-width below
+// sm, centered at 5/6 width (matches span:20/offset:2 of 24) from sm, then
+// two even columns (matches span:12/offset:0 of 24) from md.
+export const totalStatItemClassName =
+  "w-full sm:mx-auto sm:w-5/6 md:mx-0 md:w-auto";
+
 export const configRadar = {
   title: {
     show: false,
