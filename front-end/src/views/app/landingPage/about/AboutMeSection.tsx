@@ -1,169 +1,104 @@
 "use client";
 
-import { Col, Divider, Row, Skeleton, Timeline } from "antd";
 import { fromUnix } from "../../../../utils/date";
 import { FC } from "react";
-import { styled } from "styled-components";
 import reactLogo from "../../../../assets/react.svg";
-import BreakpointComp from "../../../../components/BreakpointComp";
-import { EBreakpoints } from "../../../../utils/breakpoint";
+import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Timeline } from "@/components/ui/timeline";
 import { colors } from "../../../../utils/colors";
 import { useAboutMe } from "@/features/about-me/client";
 import { useEducation } from "@/features/education/client";
 import { useExperience } from "@/features/experience/client";
-
-const AboutMeSectionStyled = styled.div`
-  * {
-    color: ${colors.primaryText};
-  }
-
-  h1 {
-    font-size: 2rem;
-    margin: 1rem;
-    text-align: center;
-  }
-
-  .about-row {
-    margin-bottom: 2rem;
-  }
-
-  .header-sub-col {
-    margin-top: 0;
-  }
-
-  .timeline {
-    .time-range {
-      font-size: 1rem;
-    }
-
-    .detail {
-      font-weight: normal;
-      font-size: 1rem;
-      display: block;
-    }
-
-    .detail-value {
-      display: unset;
-    }
-
-    .ant-timeline-item-tail {
-      background-color: ${colors.primaryText};
-    }
-
-    b,
-    h2,
-    h3 {
-      margin: 0;
-    }
-  }
-
-  .timeline-logo-col {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-`;
 
 const AboutMeSection: FC = () => {
   const { data: aboutMe, isPending: aboutMeLoading } = useAboutMe();
   const { data: education = [], isPending: educationLoading } = useEducation();
   const { data: experience = [], isPending: experienceLoading } = useExperience();
 
-  const aboutSectionSpan = { xs: 24, sm: 24, md: 11, style: {} };
-
   return (
-    <AboutMeSectionStyled>
-      <Row id="about-me" className="about-row" justify="center">
-        <Col span={23} className="about-col">
-          <h1>About Me</h1>
+    <div className="text-primary-text">
+      <div id="about-me" className="mb-8 flex justify-center">
+        <div className="mx-auto w-[95.8333%]">
+          <h1 className="m-4 text-center text-[2rem]">About Me</h1>
           {aboutMeLoading ? (
-            <Skeleton active paragraph={{ rows: 3 }} />
+            <div className="space-y-2">
+              {Array.from({ length: 3 }, (_, i) => (
+                <Skeleton key={i} className="h-4 w-full" />
+              ))}
+            </div>
           ) : (
-            <div style={{ fontSize: "1rem" }}>
-              {aboutMe?.intro && (
-                <p style={{ textIndent: "2rem" }}>{aboutMe.intro}</p>
-              )}
-              {aboutMe?.bio && (
-                <p style={{ textIndent: "2rem" }}>{aboutMe.bio}</p>
-              )}
-              {aboutMe?.mission && (
-                <p style={{ textIndent: "2rem" }}>{aboutMe.mission}</p>
-              )}
+            <div className="text-base">
+              {aboutMe?.intro && <p className="indent-8">{aboutMe.intro}</p>}
+              {aboutMe?.bio && <p className="indent-8">{aboutMe.bio}</p>}
+              {aboutMe?.mission && <p className="indent-8">{aboutMe.mission}</p>}
             </div>
           )}
-        </Col>
-      </Row>
-      <Row gutter={[8, 8]} justify="center">
-        <Col {...aboutSectionSpan} id="education" className="education-col">
-          <h2 className="header-sub-col">Education</h2>
+        </div>
+      </div>
+      <div className="flex flex-wrap justify-center gap-2">
+        <div id="education" className="w-full md:w-[45.8333%]">
+          <h2 className="mt-0">Education</h2>
           {educationLoading ? (
-            <Skeleton active />
+            <div className="space-y-2">
+              {Array.from({ length: 4 }, (_, i) => (
+                <Skeleton key={i} className="h-4 w-full" />
+              ))}
+            </div>
           ) : (
             <Timeline
-              className="timeline"
               items={education.map((edu) => ({
                 color: colors.primaryText,
                 children: (
                   <div>
-                    <b className="time-range">
+                    <b className="m-0 text-base">
                       {fromUnix(edu.startDate).format("YYYY")} -{" "}
-                      {edu.endDate
-                        ? fromUnix(edu.endDate).format("YYYY")
-                        : "Present"}
+                      {edu.endDate ? fromUnix(edu.endDate).format("YYYY") : "Present"}
                     </b>
-                    <Row justify="center">
-                      <Col className="timeline-logo-col" span={4}>
+                    <div className="flex justify-center">
+                      <div className="flex w-1/6 items-center justify-center">
                         <img src={reactLogo.src} alt="" />
-                      </Col>
-                      <Col span={20}>
-                        <h2>
+                      </div>
+                      <div className="w-5/6">
+                        <h2 className="m-0">
                           {edu.title}
                           {edu.descriptions.length > 0 && (
-                            <div>
-                              <ul className="detail">
-                                {edu.descriptions.map((desc) => (
-                                  <li key={desc.id}>{desc.description}</li>
-                                ))}
-                              </ul>
-                            </div>
+                            <ul className="block text-base font-normal">
+                              {edu.descriptions.map((desc) => (
+                                <li key={desc.id}>{desc.description}</li>
+                              ))}
+                            </ul>
                           )}
                         </h2>
-                      </Col>
-                    </Row>
+                      </div>
+                    </div>
                   </div>
                 ),
               }))}
             />
           )}
-        </Col>
+        </div>
 
-        <BreakpointComp mode=">=" breakpoint={EBreakpoints.md}>
-          <Col>
-            <Divider
-              orientation="center"
-              type="vertical"
-              style={{
-                backgroundColor: colors.primaryText,
-                height: "100%",
-                width: "4px",
-                borderRadius: "2px",
-              }}
-            />
-          </Col>
-        </BreakpointComp>
+        <Separator
+          orientation="vertical"
+          className="hidden w-1 self-stretch rounded-full bg-primary-text md:block"
+        />
 
-        <Col {...aboutSectionSpan} id="experience" className="experience-col">
-          <h2 className="header-sub-col">Experience</h2>
+        <div id="experience" className="w-full md:w-[45.8333%]">
+          <h2 className="mt-0">Experience</h2>
           {experienceLoading ? (
-            <Skeleton active />
+            <div className="space-y-2">
+              {Array.from({ length: 4 }, (_, i) => (
+                <Skeleton key={i} className="h-4 w-full" />
+              ))}
+            </div>
           ) : (
             <Timeline
-              className="timeline"
               items={experience.map((exp) => ({
                 color: colors.primaryText,
                 children: (
                   <div>
-                    <b className="time-range">
+                    <b className="m-0 text-base">
                       {fromUnix(exp.startDate).format("MMM YYYY")} -{" "}
                       {exp.endDate
                         ? (() => {
@@ -188,27 +123,21 @@ const AboutMeSection: FC = () => {
                           })()
                         : "Now"}
                     </b>
-                    <Row justify="center">
-                      <Col className="timeline-logo-col" span={4}>
+                    <div className="flex justify-center">
+                      <div className="flex w-1/6 items-center justify-center">
                         <img src={reactLogo.src} alt="" />
-                      </Col>
-                      <Col span={20}>
-                        <h2>{exp.company}</h2>
-                        <h3>
-                          <ul style={{ paddingLeft: "2rem" }}>
+                      </div>
+                      <div className="w-5/6">
+                        <h2 className="m-0">{exp.company}</h2>
+                        <h3 className="m-0">
+                          <ul className="pl-8">
                             <li>
-                              Role:{" "}
-                              <span className="detail detail-value">
-                                {exp.role}
-                              </span>
+                              Role: <span className="text-base font-normal">{exp.role}</span>
                             </li>
                             {exp.responsibilities.length > 0 && (
                               <li>
                                 Responsibilities:
-                                <ul
-                                  className="detail"
-                                  style={{ paddingLeft: "1.5rem" }}
-                                >
+                                <ul className="block pl-6 text-base font-normal">
                                   {exp.responsibilities.map((r) => (
                                     <li key={r.id}>{r.description}</li>
                                   ))}
@@ -217,16 +146,16 @@ const AboutMeSection: FC = () => {
                             )}
                           </ul>
                         </h3>
-                      </Col>
-                    </Row>
+                      </div>
+                    </div>
                   </div>
                 ),
               }))}
             />
           )}
-        </Col>
-      </Row>
-    </AboutMeSectionStyled>
+        </div>
+      </div>
+    </div>
   );
 };
 
