@@ -1,48 +1,30 @@
 "use client";
 
-import { Col, Row, Skeleton } from "antd";
 import { FC } from "react";
-import { styled } from "styled-components";
+import { Skeleton } from "@/components/ui/skeleton";
 import ProjectCard from "../../../../components/ProjectCard";
 import { openNewTabURL } from "../../../../utils/functions";
 import { isProjectOpenable, PROJECT_STATUS_LABEL } from "../../../../utils/projectStatus";
 import { useProjects } from "@/features/project/client";
 
-const ProjectSectionStyled = styled.div``;
-
 const ProjectSection: FC = () => {
   const { data: projects = [], isPending: loading } = useProjects();
 
   return (
-    <ProjectSectionStyled>
-      <h1
-        style={{
-          textAlign: "center",
-          fontSize: "2rem",
-        }}
-      >
-        Projects
-      </h1>
+    <div>
+      <h1 className="text-center text-[2rem]">Projects</h1>
       {loading ? (
-        <Skeleton active paragraph={{ rows: 4 }} />
+        <div className="my-8 space-y-3">
+          {Array.from({ length: 4 }, (_, i) => (
+            <Skeleton key={i} className="h-4 w-full" />
+          ))}
+        </div>
       ) : (
-        <Row
-          justify={{
-            xs: "center",
-            sm: "start",
-          }}
-          style={{
-            margin: "2rem 0",
-          }}
-          gutter={[16, 16]}
-        >
+        <div className="my-8 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {projects.map((project) => (
-            <Col
-              xs={22}
-              sm={12}
-              md={8}
-              lg={6}
+            <div
               key={project.id}
+              className="mx-auto w-11/12 sm:mx-0 sm:w-auto"
               onClick={() =>
                 isProjectOpenable(project.status) &&
                 project.preview &&
@@ -56,11 +38,11 @@ const ProjectSection: FC = () => {
                 statusLabel={PROJECT_STATUS_LABEL[project.status]}
                 sources={project.sources ?? []}
               />
-            </Col>
+            </div>
           ))}
-        </Row>
+        </div>
       )}
-    </ProjectSectionStyled>
+    </div>
   );
 };
 
