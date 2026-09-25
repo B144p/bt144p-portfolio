@@ -13,7 +13,6 @@ import { prefetchStatistic } from "@/features/statistic/server";
 import BaseLayout from "@/layouts/BaseLayout";
 import { getQueryClient } from "@/lib/query-client";
 import StyledComponentsRegistry from "@/lib/registry";
-import "../index.scss";
 import "./globals.css";
 
 export const metadata: Metadata = {
