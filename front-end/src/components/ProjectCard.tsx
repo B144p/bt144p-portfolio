@@ -1,6 +1,6 @@
 "use client";
 
-import { ApiOutlined } from "@ant-design/icons";
+import { Plugs } from "@phosphor-icons/react";
 import React from "react";
 import type { IProjectSource } from "@/features/project/client";
 import { BugIcon } from "@/components/icons/BugIcon";
@@ -29,7 +29,7 @@ const ProjectCard: React.FC<Props> = ({
       </div>
       <div className="detail">
         <div className="detail-img">
-          <ApiOutlined />
+          <Plugs />
         </div>
         <div className="detail-text">
           <div className="main-text">{title}</div>
