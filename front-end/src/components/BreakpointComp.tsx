@@ -1,6 +1,5 @@
 "use client";
 
-import { FC, ReactNode } from "react";
 import { useMediaQuery } from "../hooks/useMediaQuery";
 import { EBreakpoints } from "../utils/breakpoint";
 
@@ -23,14 +22,3 @@ export const useBreakpointCheck = () => {
   return ({ mode, breakpoint }: Props): boolean =>
     mode.startsWith(">") ? atLeast[breakpoint] : !atLeast[breakpoint];
 };
-
-const BreakpointComp: FC<Props & { children: ReactNode }> = ({
-  mode,
-  breakpoint,
-  children,
-}) => {
-  const breakpointCheck = useBreakpointCheck();
-  return breakpointCheck({ mode, breakpoint }) ? children : null;
-};
-
-export default BreakpointComp;

@@ -1,27 +1,38 @@
 "use client";
 
 import {
-  GithubFilled,
-  LinkOutlined,
-  LinkedinFilled,
-  MailOutlined,
-  PhoneFilled,
-} from "@ant-design/icons";
-import { FloatButton, Layout, Row, Space, Tooltip } from "antd";
+  EnvelopeSimple,
+  GithubLogo,
+  LinkSimple,
+  LinkedinLogo,
+  List,
+  Phone,
+} from "@phosphor-icons/react";
 import { FC, ReactNode, useEffect, useRef, useState } from "react";
-import BreakpointComp, { useBreakpointCheck } from "../components/BreakpointComp";
+import { useBreakpointCheck } from "../components/BreakpointComp";
 import { BugIcon } from "../components/icons/BugIcon";
+import { Button } from "@/components/ui/button";
+import { FloatButtonGroup } from "@/components/ui/float-button-group";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { EBreakpoints } from "../utils/breakpoint";
-import { colors } from "../utils/colors";
 import { copyTextClipboard, openNewTabURL } from "../utils/functions";
-import "./scss/BaseLayout.scss";
 import { useContacts, type IContact } from "@/features/contact/client";
 import {
   FRONTEND_VERSION_KEY,
   useFrontendVersion,
 } from "@/features/frontend-version/client";
-
-const { Content, Header } = Layout;
 
 interface BaseLayoutProps {
   children?: ReactNode;
@@ -38,12 +49,12 @@ const navBarElement = [
 const getContactConfig = (contact: IContact) => {
   const t = contact.title.toLowerCase();
   if (t.includes("linkedin"))
-    return { icon: <LinkedinFilled />, action: () => openNewTabURL(contact.url) };
+    return { icon: <LinkedinLogo />, action: () => openNewTabURL(contact.url) };
   if (t.includes("github"))
-    return { icon: <GithubFilled />, action: () => openNewTabURL(contact.url) };
+    return { icon: <GithubLogo />, action: () => openNewTabURL(contact.url) };
   if (t.includes("email") || t.includes("mail"))
-    return { icon: <MailOutlined />, action: () => copyTextClipboard(contact.url) };
-  return { icon: <LinkOutlined />, action: () => openNewTabURL(contact.url) };
+    return { icon: <EnvelopeSimple />, action: () => copyTextClipboard(contact.url) };
+  return { icon: <LinkSimple />, action: () => openNewTabURL(contact.url) };
 };
 
 const BaseLayout: FC<BaseLayoutProps> = ({ children }) => {
@@ -79,136 +90,105 @@ const BaseLayout: FC<BaseLayoutProps> = ({ children }) => {
   }, [prevScrollPos]);
 
   return (
-    <Layout
-      style={{
-        borderRadius: 8,
-        overflow: "hidden",
-        minHeight: "100vh",
-      }}
-    >
-      <div>
-        {breakpointCheck({ mode: "<=", breakpoint: EBreakpoints.sm }) ? (
-          <div className="">
-            <label className="burger-btn" htmlFor="burger">
-              <input
-                type="checkbox"
-                id="burger"
-                onChange={() => setSideBarOpen((prev) => !prev)}
-                checked={sideBarOpen}
-              />
-              <span />
-              <span />
-              <span />
-            </label>
-            <div
-              className={`
-                side-container
-                ${
-                  sideBarOpen ? "nav-list-burger-open" : "nav-list-burger-close"
+    <TooltipProvider>
+      <div className="min-h-screen overflow-hidden rounded-lg">
+        <div>
+          {breakpointCheck({ mode: "<=", breakpoint: EBreakpoints.sm }) ? (
+            <Sheet open={sideBarOpen} onOpenChange={setSideBarOpen}>
+              <SheetTrigger
+                render={
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="fixed top-8 right-8 z-20 rounded-full"
+                  />
                 }
-              `}
-              onClick={() => setSideBarOpen((prev) => !prev)}
-            >
-              <div className="side-container-list">
-                <ul>
+              >
+                <List className="size-6" />
+                <span className="sr-only">Open navigation</span>
+              </SheetTrigger>
+              <SheetContent side="left">
+                <SheetHeader>
+                  <SheetTitle className="sr-only">Navigation</SheetTitle>
+                </SheetHeader>
+                <nav className="flex flex-col">
                   {navBarElement.map((list) => (
-                    <li key={"#" + list.id}>
-                      <a href={"#" + list.id}>
-                        <span>{list.title}</span>
-                      </a>
-                    </li>
+                    <a
+                      key={"#" + list.id}
+                      href={"#" + list.id}
+                      className="px-8 py-3 text-2xl text-primary-text hover:bg-green-light hover:text-bright-text"
+                      onClick={() => setSideBarOpen(false)}
+                    >
+                      {list.title}
+                    </a>
                   ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <Header ref={navbarRef} className="navbar-container-header">
-            <div className="navbar-container">
-              <a className="navbar-logo" href="#">
-                <span>
-                  <BugIcon />
-                </span>
-              </a>
-              {navBarElement.map((list) => (
+                </nav>
+              </SheetContent>
+            </Sheet>
+          ) : (
+            <header
+              ref={navbarRef}
+              className="fixed z-10 flex w-screen justify-center bg-transparent transition-all duration-500 ease-in-out"
+            >
+              <div className="flex w-[min(90%,800px)] skew-x-[20deg] cursor-pointer rounded-tl-2xl rounded-tr-2xl rounded-br-2xl rounded-bl-[2rem] bg-nav-background shadow-[0_0_2rem_var(--background)]">
                 <a
-                  className="navbar-list"
-                  href={"#" + list.id}
-                  key={"#" + list.id}
+                  className="grow rounded-tl-2xl rounded-bl-[2rem] bg-green-light text-center text-bright-text"
+                  href="#"
                 >
-                  <span>{list.title}</span>
-                </a>
-              ))}
-            </div>
-          </Header>
-        )}
-      </div>
-
-      <Content
-        style={{
-          minHeight: 120,
-          lineHeight: "120px",
-          backgroundColor: colors.background,
-          display: "flex",
-          justifyContent: "center",
-        }}
-      >
-        {children}
-      </Content>
-      <footer
-        style={{
-          textAlign: "center",
-          color: colors.brightText,
-          display: "flex",
-          justifyContent: "center",
-          backgroundColor: colors.navBackground,
-          boxShadow: `0 0 1rem 0.5rem ${colors.brightText}10`,
-        }}
-        id="footer"
-      >
-        <Row
-          justify={
-            breakpointCheck({ mode: "<=", breakpoint: EBreakpoints.sm })
-              ? "center"
-              : "space-between"
-          }
-          align="middle"
-          style={{
-            width: "calc(100% - 10rem)",
-          }}
-        >
-          BT_144p © 2024{siteViews !== undefined && ` · ${siteViews.toLocaleString("en-US")} views`}
-          <BreakpointComp mode=">" breakpoint={EBreakpoints.sm}>
-            <Space split style={{ fontSize: "2rem" }}>
-              {contactButtons.map((contact) => (
-                <Tooltip key={contact.title} title={contact.title}>
-                  <span onClick={contact.action} style={{ cursor: "pointer" }}>
-                    {contact.icon}
+                  <span className="inline-block -skew-x-[20deg]">
+                    <BugIcon />
                   </span>
+                </a>
+                {navBarElement.map((list) => (
+                  <a
+                    className="grow-[2] text-center text-primary-text italic transition-all duration-300 ease-in-out last:hover:rounded-tr-2xl last:hover:rounded-br-2xl hover:border-l-4 hover:border-double hover:border-bright-text hover:bg-green-light hover:text-bright-text"
+                    href={"#" + list.id}
+                    key={"#" + list.id}
+                  >
+                    <span className="inline-block -skew-x-[20deg]">{list.title}</span>
+                  </a>
+                ))}
+              </div>
+            </header>
+          )}
+        </div>
+
+        <div className="flex min-h-[120px] items-center justify-center bg-background leading-[120px]">
+          {children}
+        </div>
+        <footer
+          className="flex justify-center bg-nav-background text-center text-bright-text shadow-[0_0_1rem_0.5rem_rgba(212,219,180,0.0627)]"
+          id="footer"
+        >
+          <div className="flex w-[calc(100%-10rem)] items-center justify-center sm:justify-between">
+            BT_144p © 2024{siteViews !== undefined && ` · ${siteViews.toLocaleString("en-US")} views`}
+            <div className="hidden gap-4 text-[2rem] sm:flex">
+              {contactButtons.map((contact) => (
+                <Tooltip key={contact.title}>
+                  <TooltipTrigger
+                    render={<span className="cursor-pointer" onClick={contact.action} />}
+                  >
+                    {contact.icon}
+                  </TooltipTrigger>
+                  <TooltipContent>{contact.title}</TooltipContent>
                 </Tooltip>
               ))}
-            </Space>
-          </BreakpointComp>
-        </Row>
-      </footer>
+            </div>
+          </div>
+        </footer>
 
-      <BreakpointComp mode="<=" breakpoint={EBreakpoints.sm}>
-        <FloatButton.Group
-          className="float-btn"
-          trigger="click"
-          icon={<PhoneFilled />}
-        >
-          {contactButtons.map((contact) => (
-            <FloatButton
-              key={contact.title}
-              className="float-btn"
-              icon={contact.icon}
-              onClick={contact.action}
-            />
-          ))}
-        </FloatButton.Group>
-      </BreakpointComp>
-    </Layout>
+        <div className="sm:hidden">
+          <FloatButtonGroup
+            trigger={<Phone />}
+            items={contactButtons.map((contact) => ({
+              key: contact.title,
+              icon: contact.icon,
+              onClick: contact.action,
+            }))}
+          />
+        </div>
+      </div>
+    </TooltipProvider>
   );
 };
 
