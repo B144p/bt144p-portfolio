@@ -1,7 +1,7 @@
 "use client";
 
-import { Grid } from "antd";
 import { FC, ReactNode } from "react";
+import { useMediaQuery } from "../hooks/useMediaQuery";
 import { EBreakpoints } from "../utils/breakpoint";
 
 type Props = {
@@ -9,22 +9,19 @@ type Props = {
   breakpoint: EBreakpoints;
 };
 
-const screenKey: Record<EBreakpoints, "sm" | "md" | "lg" | "xl" | "xxl"> = {
-  [EBreakpoints.sm]: "sm",
-  [EBreakpoints.md]: "md",
-  [EBreakpoints.lg]: "lg",
-  [EBreakpoints.xl]: "xl",
-  [EBreakpoints.xxl]: "xxl",
-};
-
-// antd's screens map is empty until mounted (always on the server), so an
-// unknown width is treated as desktop — server and first client render agree.
+// Mirrors antd's Grid.useBreakpoint() shape: track "at least this breakpoint"
+// for every breakpoint up front, then look one up per call -- this hook's
+// call count must stay fixed regardless of which breakpoint is requested.
 export const useBreakpointCheck = () => {
-  const screens = Grid.useBreakpoint();
-  return ({ mode, breakpoint }: Props): boolean => {
-    const atLeast = screens[screenKey[breakpoint]] ?? true;
-    return mode.startsWith(">") ? atLeast : !atLeast;
+  const atLeast: Record<EBreakpoints, boolean> = {
+    [EBreakpoints.sm]: useMediaQuery(`(min-width: ${EBreakpoints.sm}px)`),
+    [EBreakpoints.md]: useMediaQuery(`(min-width: ${EBreakpoints.md}px)`),
+    [EBreakpoints.lg]: useMediaQuery(`(min-width: ${EBreakpoints.lg}px)`),
+    [EBreakpoints.xl]: useMediaQuery(`(min-width: ${EBreakpoints.xl}px)`),
+    [EBreakpoints.xxl]: useMediaQuery(`(min-width: ${EBreakpoints.xxl}px)`),
   };
+  return ({ mode, breakpoint }: Props): boolean =>
+    mode.startsWith(">") ? atLeast[breakpoint] : !atLeast[breakpoint];
 };
 
 const BreakpointComp: FC<Props & { children: ReactNode }> = ({
