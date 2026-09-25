@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  BugFilled,
   GithubFilled,
   LinkOutlined,
   LinkedinFilled,
@@ -11,6 +10,7 @@ import {
 import { FloatButton, Layout, Row, Space, Tooltip } from "antd";
 import { FC, ReactNode, useEffect, useRef, useState } from "react";
 import BreakpointComp, { useBreakpointCheck } from "../components/BreakpointComp";
+import { BugIcon } from "../components/icons/BugIcon";
 import { EBreakpoints } from "../utils/breakpoint";
 import { colors } from "../utils/colors";
 import { copyTextClipboard, openNewTabURL } from "../utils/functions";
@@ -127,7 +127,7 @@ const BaseLayout: FC<BaseLayoutProps> = ({ children }) => {
             <div className="navbar-container">
               <a className="navbar-logo" href="#">
                 <span>
-                  <BugFilled />
+                  <BugIcon />
                 </span>
               </a>
               {navBarElement.map((list) => (

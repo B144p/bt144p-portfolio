@@ -1,8 +1,9 @@
 "use client";
 
-import { ApiOutlined, BugFilled } from "@ant-design/icons";
+import { ApiOutlined } from "@ant-design/icons";
 import React from "react";
 import type { IProjectSource } from "@/features/project/client";
+import { BugIcon } from "@/components/icons/BugIcon";
 import "./scss/ProjectCard.scss";
 
 type Props = {
@@ -23,7 +24,7 @@ const ProjectCard: React.FC<Props> = ({
   return (
     <div className={`main ${statusLabel ? "main-upcoming" : ""}`}>
       <div className={`card ${statusLabel ? "card-upcoming" : ""}`}>
-        <BugFilled />
+        <BugIcon />
         {statusLabel && <span className="card-upcoming-text">{statusLabel}</span>}
       </div>
       <div className="detail">

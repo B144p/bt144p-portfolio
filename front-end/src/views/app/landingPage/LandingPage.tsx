@@ -1,12 +1,12 @@
 "use client";
 
-import { BugFilled } from "@ant-design/icons";
 import { Divider } from "antd";
 import { FC } from "react";
 import { styled } from "styled-components";
 import { EBreakpoints } from "../../../utils/breakpoint";
 import { colors } from "../../../utils/colors";
 import headerImg from "../../../assets/BG-1a2329.png";
+import { BugIcon } from "../../../components/icons/BugIcon";
 import AboutMeSection from "./about/AboutMeSection";
 import StatsSection from "./stats/StatsSection";
 import ProjectSection from "./project/ProjectSection";
@@ -79,13 +79,13 @@ const LandingPage: FC = () => {
           <AboutMeSection />
         </SectionStyled>
         <DividerStyled orientation="center">
-          <BugFilled />
+          <BugIcon />
         </DividerStyled>
         <SectionStyled id="stats">
           <StatsSection />
         </SectionStyled>
         <DividerStyled orientation="center">
-          <BugFilled />
+          <BugIcon />
         </DividerStyled>
         <SectionStyled id="project">
           <ProjectSection />
