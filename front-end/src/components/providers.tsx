@@ -1,6 +1,5 @@
 "use client";
 
-import "@ant-design/v5-patch-for-react-19";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactNode } from "react";
 import { getQueryClient } from "@/lib/query-client";
