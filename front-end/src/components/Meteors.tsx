@@ -1,7 +1,10 @@
 "use client";
 
 import { CSSProperties, FC, useState, useSyncExternalStore } from "react";
-import "./scss/meteors.scss";
+
+const METEOR_CLASSNAME =
+  "fixed aspect-square rounded-full bg-slate-500 -translate-x-1/2 -translate-y-1/2 rotate-[270deg] animate-meteor " +
+  "before:content-[''] before:absolute before:top-1/2 before:h-px before:w-[50px] before:-translate-y-1/2 before:bg-linear-to-r before:from-slate-500 before:to-transparent";
 
 type Props = { number?: number };
 
@@ -23,7 +26,7 @@ const MeteorField: FC<{ count: number }> = ({ count }) => {
   return (
     <>
       {styles.map((style, idx) => (
-        <span key={"meteor" + idx} className="meteor meteor-animation" style={style} />
+        <span key={"meteor" + idx} className={METEOR_CLASSNAME} style={style} />
       ))}
     </>
   );
