@@ -9,7 +9,7 @@ import {
   Phone,
 } from "@phosphor-icons/react";
 import { FC, ReactNode, useEffect, useRef, useState } from "react";
-import { useBreakpointCheck } from "../components/BreakpointComp";
+import { useBreakpoint } from "../components/BreakpointComp";
 import { BugIcon } from "../components/icons/BugIcon";
 import { Button } from "@/components/ui/button";
 import { FloatButtonGroup } from "@/components/ui/float-button-group";
@@ -61,7 +61,7 @@ const BaseLayout: FC<BaseLayoutProps> = ({ children }) => {
   const navbarRef = useRef<HTMLDivElement>(null);
   const [prevScrollPos, setPrevScrollPos] = useState(0);
   const [sideBarOpen, setSideBarOpen] = useState(false);
-  const breakpointCheck = useBreakpointCheck();
+  const isMobile = useBreakpoint("<=", EBreakpoints.sm);
 
   const { data: contacts = [] } = useContacts();
   const contactButtons = contacts.map((c) => ({
@@ -93,7 +93,7 @@ const BaseLayout: FC<BaseLayoutProps> = ({ children }) => {
     <TooltipProvider>
       <div className="min-h-screen overflow-hidden rounded-lg">
         <div>
-          {breakpointCheck({ mode: "<=", breakpoint: EBreakpoints.sm }) ? (
+          {isMobile ? (
             <Sheet open={sideBarOpen} onOpenChange={setSideBarOpen}>
               <SheetTrigger
                 render={
@@ -157,7 +157,7 @@ const BaseLayout: FC<BaseLayoutProps> = ({ children }) => {
           {children}
         </div>
         <footer
-          className="flex justify-center bg-nav-background text-center text-bright-text shadow-[0_0_1rem_0.5rem_rgba(212,219,180,0.0627)]"
+          className="flex justify-center bg-nav-background text-center text-bright-text shadow-[0_0_1rem_0.5rem_color-mix(in_oklab,var(--bright-text)_6%,transparent)]"
           id="footer"
         >
           <div className="flex w-[calc(100%-10rem)] items-center justify-center sm:justify-between">

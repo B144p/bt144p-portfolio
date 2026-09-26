@@ -3,22 +3,9 @@
 import { useMediaQuery } from "../hooks/useMediaQuery";
 import { EBreakpoints } from "../utils/breakpoint";
 
-type Props = {
-  mode: ">" | "<" | ">=" | "<=";
-  breakpoint: EBreakpoints;
-};
+type Mode = ">" | "<" | ">=" | "<=";
 
-// Mirrors antd's Grid.useBreakpoint() shape: track "at least this breakpoint"
-// for every breakpoint up front, then look one up per call -- this hook's
-// call count must stay fixed regardless of which breakpoint is requested.
-export const useBreakpointCheck = () => {
-  const atLeast: Record<EBreakpoints, boolean> = {
-    [EBreakpoints.sm]: useMediaQuery(`(min-width: ${EBreakpoints.sm}px)`),
-    [EBreakpoints.md]: useMediaQuery(`(min-width: ${EBreakpoints.md}px)`),
-    [EBreakpoints.lg]: useMediaQuery(`(min-width: ${EBreakpoints.lg}px)`),
-    [EBreakpoints.xl]: useMediaQuery(`(min-width: ${EBreakpoints.xl}px)`),
-    [EBreakpoints.xxl]: useMediaQuery(`(min-width: ${EBreakpoints.xxl}px)`),
-  };
-  return ({ mode, breakpoint }: Props): boolean =>
-    mode.startsWith(">") ? atLeast[breakpoint] : !atLeast[breakpoint];
+export const useBreakpoint = (mode: Mode, breakpoint: EBreakpoints): boolean => {
+  const atLeast = useMediaQuery(`(min-width: ${breakpoint}px)`);
+  return mode.startsWith(">") ? atLeast : !atLeast;
 };

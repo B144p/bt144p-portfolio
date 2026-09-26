@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import { fromUnix } from "../../../../utils/date";
 import { FC, useMemo } from "react";
 import { Progress } from "@/components/ui/progress";
-import { Skeleton } from "@/components/ui/skeleton";
+import { SkeletonLines } from "@/components/SkeletonLines";
 import { useStatistic, type IStatContribution } from "@/features/statistic/client";
 import { numberFloatFormat } from "../../../../utils/functions";
 import { cn } from "@/lib/utils";
@@ -103,11 +103,7 @@ const StatsSection: FC = () => {
     <div>
       <h1 className="mb-4 ml-4 text-[2rem]">Statistics</h1>
       {loading ? (
-        <div className="space-y-3">
-          {Array.from({ length: 10 }, (_, i) => (
-            <Skeleton key={i} className="h-4 w-full" />
-          ))}
-        </div>
+        <SkeletonLines rows={10} />
       ) : (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2">

@@ -1,7 +1,7 @@
 "use client";
 
 import { FC } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
+import { SkeletonLines } from "@/components/SkeletonLines";
 import ProjectCard from "../../../../components/ProjectCard";
 import { openNewTabURL } from "../../../../utils/functions";
 import { isProjectOpenable, PROJECT_STATUS_LABEL } from "../../../../utils/projectStatus";
@@ -14,11 +14,7 @@ const ProjectSection: FC = () => {
     <div>
       <h1 className="text-center text-[2rem]">Projects</h1>
       {loading ? (
-        <div className="my-8 space-y-3">
-          {Array.from({ length: 4 }, (_, i) => (
-            <Skeleton key={i} className="h-4 w-full" />
-          ))}
-        </div>
+        <SkeletonLines rows={4} className="my-8" />
       ) : (
         <div className="my-8 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {projects.map((project) => (

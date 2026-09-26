@@ -34,7 +34,7 @@ const ProjectCard: React.FC<Props> = ({
     >
       <div
         className={cn(
-          "relative flex aspect-3/2 w-full items-center justify-center rounded-lg bg-[#252525] text-[3rem]",
+          "relative flex aspect-3/2 w-full items-center justify-center rounded-lg bg-card text-[3rem]",
           upcoming ? "cursor-not-allowed" : "cursor-pointer",
         )}
       >
@@ -47,7 +47,7 @@ const ProjectCard: React.FC<Props> = ({
         )}
       </div>
       <div className="mt-3 flex flex-row">
-        <div className="flex aspect-square w-9 items-center justify-center overflow-hidden rounded-[0.3125rem] bg-[#252525] text-base">
+        <div className="flex aspect-square w-9 items-center justify-center overflow-hidden rounded-[0.3125rem] bg-card text-base">
           <Plugs />
         </div>
         <div className="ml-2 flex flex-col justify-center font-[Montserrat] text-bright-text">

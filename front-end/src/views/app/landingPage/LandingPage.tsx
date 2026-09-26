@@ -9,7 +9,7 @@ import AboutMeSection from "./about/AboutMeSection";
 import StatsSection from "./stats/StatsSection";
 import ProjectSection from "./project/ProjectSection";
 import { Meteors } from "../../../components/Meteors";
-import { useBreakpointCheck } from "../../../components/BreakpointComp";
+import { useBreakpoint } from "../../../components/BreakpointComp";
 
 const SECTION_CLASSNAME =
   "min-h-[75vh] w-[min(100%_-_2rem,1000px)] leading-normal bg-background content-center";
@@ -23,15 +23,11 @@ const SectionDivider: FC = () => (
 );
 
 const LandingPage: FC = () => {
-  const breakpointCheck = useBreakpointCheck();
+  const isMobile = useBreakpoint("<=", EBreakpoints.sm);
 
   return (
     <div>
-      <Meteors
-        number={
-          breakpointCheck({ mode: "<=", breakpoint: EBreakpoints.sm }) ? 30 : 100
-        }
-      />
+      <Meteors number={isMobile ? 30 : 100} />
       <section
         id="home"
         className="min-h-[90vh] w-screen bg-cover bg-center bg-no-repeat shadow-[inset_0_-7.5rem_7.5rem_0_var(--background)] max-md:bg-position-[30%_50%]"

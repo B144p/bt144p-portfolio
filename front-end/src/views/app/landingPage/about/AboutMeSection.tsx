@@ -4,7 +4,7 @@ import { fromUnix } from "../../../../utils/date";
 import { FC } from "react";
 import reactLogo from "../../../../assets/react.svg";
 import { Separator } from "@/components/ui/separator";
-import { Skeleton } from "@/components/ui/skeleton";
+import { SkeletonLines } from "@/components/SkeletonLines";
 import { Timeline } from "@/components/ui/timeline";
 import { colors } from "../../../../utils/colors";
 import { useAboutMe } from "@/features/about-me/client";
@@ -22,11 +22,7 @@ const AboutMeSection: FC = () => {
         <div className="mx-auto w-[95.8333%]">
           <h1 className="m-4 text-center text-[2rem]">About Me</h1>
           {aboutMeLoading ? (
-            <div className="space-y-2">
-              {Array.from({ length: 3 }, (_, i) => (
-                <Skeleton key={i} className="h-4 w-full" />
-              ))}
-            </div>
+            <SkeletonLines rows={3} className="space-y-2" />
           ) : (
             <div className="text-base">
               {aboutMe?.intro && <p className="indent-8">{aboutMe.intro}</p>}
@@ -40,11 +36,7 @@ const AboutMeSection: FC = () => {
         <div id="education" className="w-full md:w-[45.8333%]">
           <h2 className="mt-0">Education</h2>
           {educationLoading ? (
-            <div className="space-y-2">
-              {Array.from({ length: 4 }, (_, i) => (
-                <Skeleton key={i} className="h-4 w-full" />
-              ))}
-            </div>
+            <SkeletonLines rows={4} className="space-y-2" />
           ) : (
             <Timeline
               items={education.map((edu) => ({
@@ -87,11 +79,7 @@ const AboutMeSection: FC = () => {
         <div id="experience" className="w-full md:w-[45.8333%]">
           <h2 className="mt-0">Experience</h2>
           {experienceLoading ? (
-            <div className="space-y-2">
-              {Array.from({ length: 4 }, (_, i) => (
-                <Skeleton key={i} className="h-4 w-full" />
-              ))}
-            </div>
+            <SkeletonLines rows={4} className="space-y-2" />
           ) : (
             <Timeline
               items={experience.map((exp) => ({
