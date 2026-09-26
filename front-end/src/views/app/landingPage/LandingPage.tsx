@@ -1,95 +1,53 @@
 "use client";
 
-import { BugFilled } from "@ant-design/icons";
-import { Divider } from "antd";
 import { FC } from "react";
-import { styled } from "styled-components";
+import { Separator } from "@/components/ui/separator";
 import { EBreakpoints } from "../../../utils/breakpoint";
-import { colors } from "../../../utils/colors";
 import headerImg from "../../../assets/BG-1a2329.png";
+import { BugIcon } from "../../../components/icons/BugIcon";
 import AboutMeSection from "./about/AboutMeSection";
 import StatsSection from "./stats/StatsSection";
 import ProjectSection from "./project/ProjectSection";
 import { Meteors } from "../../../components/Meteors";
-import { useBreakpointCheck } from "../../../components/BreakpointComp";
+import { useBreakpoint } from "../../../components/BreakpointComp";
 
-const HeroSection = styled.section`
-  min-height: 90vh;
-  width: 100vw;
-  box-shadow: inset 0px -7.5rem 7.5rem 0px ${colors.background};
+const SECTION_CLASSNAME =
+  "min-h-[75vh] w-[min(100%_-_2rem,1000px)] leading-normal bg-background content-center";
 
-  background-image: url(${headerImg.src});
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-
-  @media (max-width: ${EBreakpoints.md + "px"}) {
-    background-position: 30% 50%;
-  }
-`;
-
-const SectionStyled = styled.section`
-  min-height: 75vh;
-  width: min(100% - 2rem, 1000px);
-  line-height: normal;
-  background-color: ${colors.background};
-  align-content: center;
-`;
-
-export const DividerStyled = styled(Divider)`
-  width: min(100% - 2rem, 1000px);
-  min-width: unset;
-
-  &::before,
-  &::after {
-    background-color: ${colors.primaryText};
-    height: 4px;
-    border-radius: 2px;
-  }
-
-  .ant-divider-inner-text {
-    color: ${colors.primaryText};
-  }
-`;
+const SectionDivider: FC = () => (
+  <div className="mx-auto flex w-[min(100%_-_2rem,1000px)] items-center gap-4">
+    <Separator className="h-1 flex-1 rounded-full bg-primary-text" />
+    <BugIcon className="text-primary-text" />
+    <Separator className="h-1 flex-1 rounded-full bg-primary-text" />
+  </div>
+);
 
 const LandingPage: FC = () => {
-  const breakpointCheck = useBreakpointCheck();
+  const isMobile = useBreakpoint("<=", EBreakpoints.sm);
 
   return (
     <div>
-      <Meteors
-      number={
-        breakpointCheck({ mode: "<=", breakpoint: EBreakpoints.sm })
-          ? 30
-          : 100
-        }
-      />
-      <HeroSection id="home">
+      <Meteors number={isMobile ? 30 : 100} />
+      <section
+        id="home"
+        className="min-h-[90vh] w-screen bg-cover bg-center bg-no-repeat shadow-[inset_0_-7.5rem_7.5rem_0_var(--background)] max-md:bg-position-[30%_50%]"
+        style={{ backgroundImage: `url(${headerImg.src})` }}
+      >
         <div className="hero-text"></div>
         <div className="hero-img"></div>
-      </HeroSection>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
-      >
-        <SectionStyled id="about">
+      </section>
+      <div className="flex flex-col items-center">
+        <section id="about" className={SECTION_CLASSNAME}>
           <AboutMeSection />
-        </SectionStyled>
-        <DividerStyled orientation="center">
-          <BugFilled />
-        </DividerStyled>
-        <SectionStyled id="stats">
+        </section>
+        <SectionDivider />
+        <section id="stats" className={SECTION_CLASSNAME}>
           <StatsSection />
-        </SectionStyled>
-        <DividerStyled orientation="center">
-          <BugFilled />
-        </DividerStyled>
-        <SectionStyled id="project">
+        </section>
+        <SectionDivider />
+        <section id="project" className={SECTION_CLASSNAME}>
           <ProjectSection />
-        </SectionStyled>
+        </section>
       </div>
     </div>
   );

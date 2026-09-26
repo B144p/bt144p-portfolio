@@ -1,23 +1,21 @@
 "use client";
 
-import { Col, Progress, Row, Skeleton } from "antd";
 import type { EChartsOption } from "echarts-for-react";
 import dynamic from "next/dynamic";
 import { fromUnix } from "../../../../utils/date";
 import { FC, useMemo } from "react";
-import styled from "styled-components";
+import { Progress } from "@/components/ui/progress";
+import { SkeletonLines } from "@/components/SkeletonLines";
 import { useStatistic, type IStatContribution } from "@/features/statistic/client";
-import { colors } from "../../../../utils/colors";
 import { numberFloatFormat } from "../../../../utils/functions";
+import { cn } from "@/lib/utils";
 import {
   configPie,
   configRadar,
   panelAttributesConfig,
   panelColorsConfig,
-  totalRowSpan,
+  totalStatItemClassName,
 } from "./statsSection.model";
-import { useBreakpointCheck } from "../../../../components/BreakpointComp";
-import { EBreakpoints } from "../../../../utils/breakpoint";
 
 // Both render browser-measured canvas/SVG (echarts, react-measure) and the
 // calendar lays out weeks in the local timezone, so they only render client-side.
@@ -26,50 +24,7 @@ const Calendar = dynamic(() => import("react-github-contribution-calendar"), {
   ssr: false,
 });
 
-const ProgressRowStyled = styled(Row)`
-  color: ${colors.primaryText};
-
-  .ant-progress {
-    .ant-progress-inner {
-      background-color: ${colors.greenLighter}20;
-    }
-    .ant-progress-text {
-      color: ${colors.primaryText};
-    }
-  }
-`;
-
-const StatsSectionStyled = styled.div`
-  h1 {
-    font-size: 2rem;
-    margin: 0 0 1rem 1rem;
-  }
-
-  .head-stats {
-    display: flex;
-    align-items: baseline;
-    gap: 0.5rem;
-
-    h2 {
-      margin: 0;
-      color: ${colors.brightText};
-    }
-
-    p {
-      margin: 0;
-      font-size: 1rem;
-      font-weight: 600;
-    }
-  }
-
-  .total-row {
-    border: 1px solid;
-  }
-`;
-
 const StatsSection: FC = () => {
-  const breakpointCheck = useBreakpointCheck();
-
   const { data: statistic, isPending: loading } = useStatistic();
 
   const formatDate = (unixSeconds: number) =>
@@ -145,97 +100,69 @@ const StatsSection: FC = () => {
   }, [statistic]);
 
   return (
-    <StatsSectionStyled>
-      <h1>Statistics</h1>
+    <div>
+      <h1 className="mb-4 ml-4 text-[2rem]">Statistics</h1>
       {loading ? (
-        <Skeleton active paragraph={{ rows: 10 }} />
+        <SkeletonLines rows={10} />
       ) : (
         <>
-          <Row>
-            <Col {...totalRowSpan} className="head-stats">
-              <h2>Range :</h2>
-              <p>
+          <div className="grid grid-cols-1 md:grid-cols-2">
+            <div className={cn(totalStatItemClassName, "flex items-baseline gap-2")}>
+              <h2 className="m-0 text-bright-text">Range :</h2>
+              <p className="m-0 text-base font-semibold">
                 {statistic
                   ? `${formatDate(statistic.startDate)} - ${formatDate(statistic.endDate)}`
                   : "-"}
               </p>
-            </Col>
-            <Col {...totalRowSpan} className="head-stats">
-              <h2>Total Time :</h2>
-              <p>{statistic?.humanReadable ?? "0 hrs 0 mins"}</p>
-            </Col>
-          </Row>
+            </div>
+            <div className={cn(totalStatItemClassName, "flex items-baseline gap-2")}>
+              <h2 className="m-0 text-bright-text">Total Time :</h2>
+              <p className="m-0 text-base font-semibold">
+                {statistic?.humanReadable ?? "0 hrs 0 mins"}
+              </p>
+            </div>
+          </div>
 
-          <Row
-            gutter={[8, 8]}
-            style={{ marginTop: "1rem" }}
-            justify="center"
-            align="middle"
-          >
-            <Col sm={12} xs={24}>
-              <ReactEChart
-                style={{ width: "100%" }}
-                option={radarOptions}
-              />
-            </Col>
-            <Col sm={12} xs={24}>
+          <div className="mt-4 grid grid-cols-1 items-center gap-2 sm:grid-cols-2">
+            <div>
+              <ReactEChart style={{ width: "100%" }} option={radarOptions} />
+            </div>
+            <div className="space-y-2">
               {sortedLanguages.map((lang) => (
-                <ProgressRowStyled key={lang.language}>
+                <div key={lang.language} className="text-primary-text">
                   <span>{`${lang.language} => ${lang.humanReadable}`}</span>
-                  <Progress
-                    className="progress-styled"
-                    percent={lang.percent}
-                    status="active"
-                    format={(percent) => numberFloatFormat(percent ?? 0) + "%"}
-                    strokeColor={colors.greenLight}
-                    style={{ marginBottom: 0 }}
-                  />
-                </ProgressRowStyled>
+                  <div className="flex items-center gap-2">
+                    <Progress value={lang.percent} className="flex-1" />
+                    <span className="text-xs tabular-nums">
+                      {numberFloatFormat(lang.percent) + "%"}
+                    </span>
+                  </div>
+                </div>
               ))}
-            </Col>
-          </Row>
+            </div>
+          </div>
 
-          <Row
-            gutter={[8, 8]}
-            style={{ marginTop: "1rem" }}
-            justify="center"
-            align="middle"
-          >
-            <Col sm={12} xs={24}>
-              <ReactEChart
-                style={{ width: "100%" }}
-                option={pieOptions}
-              />
-            </Col>
-            <Col sm={12} xs={24}>
+          <div className="mt-4 grid grid-cols-1 items-center gap-2 sm:grid-cols-2">
+            <div>
+              <ReactEChart style={{ width: "100%" }} option={pieOptions} />
+            </div>
+            <div className="space-y-2">
               {statistic?.operatingSystems.map((os) => (
-                <ProgressRowStyled key={os.os}>
+                <div key={os.os} className="text-primary-text">
                   <span>{`${os.os} => ${os.humanReadable}`}</span>
-                  <Progress
-                    className="progress-styled"
-                    percent={os.percent}
-                    status="active"
-                    format={(percent) => numberFloatFormat(percent ?? 0) + "%"}
-                    strokeColor={colors.greenLight}
-                    style={{ marginBottom: 0 }}
-                  />
-                </ProgressRowStyled>
+                  <div className="flex items-center gap-2">
+                    <Progress value={os.percent} className="flex-1" />
+                    <span className="text-xs tabular-nums">
+                      {numberFloatFormat(os.percent) + "%"}
+                    </span>
+                  </div>
+                </div>
               ))}
-            </Col>
-          </Row>
+            </div>
+          </div>
 
-          <Row justify="center">
-            <div
-              style={{
-                width: "min(100%, 45rem)",
-                paddingTop: breakpointCheck({
-                  mode: "<=",
-                  breakpoint: EBreakpoints.sm,
-                })
-                  ? "2rem"
-                  : "unset",
-              }}
-            >
+          <div className="flex justify-center">
+            <div className="w-full max-w-[45rem] max-sm:pt-8">
               {contributionUntil && (
                 <Calendar
                   values={contributionSource}
@@ -247,10 +174,10 @@ const StatsSection: FC = () => {
                 />
               )}
             </div>
-          </Row>
+          </div>
         </>
       )}
-    </StatsSectionStyled>
+    </div>
   );
 };
 

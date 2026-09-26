@@ -1,14 +1,9 @@
-export const totalRowSpan = {
-  sm: {
-    span: 20,
-    offset: 2,
-  },
-  md: {
-    span: 12,
-    offset: 0,
-  },
-  xs: 24,
-};
+// Tailwind grid equivalent of antd's old totalRowSpan Col config
+// ({sm:{span:20,offset:2}, md:{span:12,offset:0}, xs:24}): stacked
+// full-width below sm, centered at 5/6 width from sm, then two even
+// columns from md.
+export const totalStatItemClassName =
+  "w-full sm:mx-auto sm:w-5/6 md:mx-0 md:w-auto";
 
 export const configRadar = {
   title: {

@@ -1,4 +1,3 @@
-import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
@@ -12,8 +11,7 @@ import { prefetchProjects } from "@/features/project/server";
 import { prefetchStatistic } from "@/features/statistic/server";
 import BaseLayout from "@/layouts/BaseLayout";
 import { getQueryClient } from "@/lib/query-client";
-import StyledComponentsRegistry from "@/lib/registry";
-import "../index.scss";
+import "./globals.css";
 
 export const metadata: Metadata = {
   title: "BT-144p: Portfolio",
@@ -38,15 +36,11 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body>
-        <AntdRegistry>
-          <StyledComponentsRegistry>
-            <Providers>
-              <HydrationBoundary state={dehydrate(queryClient)}>
-                <BaseLayout>{children}</BaseLayout>
-              </HydrationBoundary>
-            </Providers>
-          </StyledComponentsRegistry>
-        </AntdRegistry>
+        <Providers>
+          <HydrationBoundary state={dehydrate(queryClient)}>
+            <BaseLayout>{children}</BaseLayout>
+          </HydrationBoundary>
+        </Providers>
       </body>
     </html>
   );
