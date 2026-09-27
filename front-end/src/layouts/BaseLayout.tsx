@@ -182,7 +182,11 @@ const BaseLayout: FC<BaseLayoutProps> = ({ children }) => {
               ))}
             </div>
             <p className="flex items-center gap-2 text-xs text-primary-text">
-              <span className="text-bright-text">BT_144p © {new Date().getFullYear()}</span>
+              {/* Clock read at render: server and browser can disagree around New
+                Year, which is harmless here, so don't flag it as a mismatch. */}
+              <span className="text-bright-text" suppressHydrationWarning>
+                BT_144p © {new Date().getFullYear()}
+              </span>
               {siteViews !== undefined && (
                 <>
                   <span aria-hidden>·</span>

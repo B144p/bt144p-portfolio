@@ -28,7 +28,11 @@ const ProjectCard: React.FC<Props> = ({
   clickable,
   sources = [],
 }) => {
-  const statusBadge = PROJECT_STATUS[status];
+  // Fallback: the API isn't validated, so a new status shouldn't crash the section.
+  const statusBadge = PROJECT_STATUS[status] ?? {
+    label: String(status),
+    color: "var(--secondary-text)",
+  };
 
   return (
     <div

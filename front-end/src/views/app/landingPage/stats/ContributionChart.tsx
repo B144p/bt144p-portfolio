@@ -3,6 +3,7 @@
 import { FC, useEffect, useMemo, useRef, useState } from "react";
 import type { IStatContribution } from "@/features/statistic/client";
 import { cn } from "@/lib/utils";
+import { SITE_UTC_OFFSET_SECONDS as OFFSET } from "@/utils/date";
 import { formatDay, formatHours, MONTHS } from "./format";
 
 const WEEKS = 53;
@@ -22,7 +23,13 @@ const LEVEL_COLORS: Record<Level, string> = {
 
 type DayCell = { key: number; date: number; totalSeconds: number; level: Level; isFuture: boolean };
 
-const startOfUTCDay = (unix: number) => Math.floor(unix / DAY) * DAY;
+// Days are Asia/Bangkok days (fixed +07:00, no DST; see utils/date.ts), the
+// zone the backend writes them in. Grouping by UTC days would put a day
+// starting at Bangkok midnight into the previous cell.
+/** Unix seconds of the site-zone midnight starting `unix`'s day */
+const startOfSiteDay = (unix: number) => Math.floor((unix + OFFSET) / DAY) * DAY - OFFSET;
+/** UTC getters on this Date read the site-zone calendar fields */
+const siteCalendar = (unix: number) => new Date((unix + OFFSET) * 1000);
 
 const quantile = (sortedAsc: number[], q: number) => {
   const pos = (sortedAsc.length - 1) * q;
@@ -37,8 +44,8 @@ const quantile = (sortedAsc: number[], q: number) => {
 // quartiles of active days (not fixed hour thresholds), so the scale adapts
 // to the actual data.
 const buildGrid = (contributions: IStatContribution[], anchor: number) => {
-  const byDay = new Map(contributions.map((c) => [startOfUTCDay(c.date), c.totalSeconds]));
-  const weekday = new Date(anchor * 1000).getUTCDay();
+  const byDay = new Map(contributions.map((c) => [startOfSiteDay(c.date), c.totalSeconds]));
+  const weekday = siteCalendar(anchor).getUTCDay();
   const gridStart = anchor - weekday * DAY - 7 * (WEEKS - 1) * DAY;
 
   const cells: DayCell[] = Array.from({ length: WEEKS * 7 }, (_, i) => {
@@ -65,7 +72,7 @@ const buildGrid = (contributions: IStatContribution[], anchor: number) => {
   const weeks = Array.from({ length: WEEKS }, (_, w) => cells.slice(w * 7, w * 7 + 7));
   let prevMonth = -1;
   const monthLabels = weeks.map((week) => {
-    const month = new Date(week[0].date * 1000).getUTCMonth();
+    const month = siteCalendar(week[0].date).getUTCMonth();
     if (month === prevMonth) return "";
     prevMonth = month;
     return MONTHS[month];
@@ -84,7 +91,7 @@ type Props = {
 export const ContributionChart: FC<Props> = ({ contributions, until }) => {
   const [hovered, setHovered] = useState<DayCell | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const anchor = startOfUTCDay(until);
+  const anchor = startOfSiteDay(until);
   const { weeks, monthLabels } = useMemo(
     () => buildGrid(contributions, anchor),
     [contributions, anchor],
