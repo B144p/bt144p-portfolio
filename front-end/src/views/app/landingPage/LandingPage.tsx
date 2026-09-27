@@ -2,7 +2,7 @@
 
 import { FC } from "react";
 import { EBreakpoints } from "../../../utils/breakpoint";
-import headerImg from "../../../assets/BG-1a2329.png";
+import headerImg from "../../../assets/BG-1a2329.webp";
 import AboutMeSection from "./about/AboutMeSection";
 import StatsSection from "./stats/StatsSection";
 import ProjectSection from "./project/ProjectSection";
