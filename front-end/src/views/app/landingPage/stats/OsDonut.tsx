@@ -25,7 +25,7 @@ const OsTooltip: FC<{ active?: boolean; payload?: Array<{ payload: OsSlice }> }>
 };
 
 export const OsDonut: FC<{ slices: OsSlice[] }> = ({ slices }) => (
-  <div className="relative mx-auto aspect-square max-h-72 w-full">
+  <div className="relative mx-auto aspect-square max-h-72 w-full min-w-0">
     <ChartContainer config={chartConfig} className="h-full w-full">
       <PieChart>
         <ChartTooltip content={<OsTooltip />} cursor={false} />

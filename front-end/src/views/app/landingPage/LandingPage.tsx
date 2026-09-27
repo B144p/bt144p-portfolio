@@ -10,13 +10,15 @@ import { Meteors } from "../../../components/Meteors";
 import { useBreakpoint } from "../../../components/BreakpointComp";
 
 const SECTION_CLASSNAME =
-  "glass-panel min-h-[75vh] w-[min(100%_-_2rem,1000px)] scroll-mt-20 px-4 py-8 leading-normal content-center sm:px-8";
+  "glass-panel min-h-[75vh] w-[min(100%_-_2rem,1000px)] scroll-mt-20 px-3 py-6 sm:px-8 sm:py-8 leading-normal content-center";
 
 const LandingPage: FC = () => {
   const isMobile = useBreakpoint("<=", EBreakpoints.sm);
 
   return (
-    <div>
+    // min-w-0 w-full: this is a flex item of BaseLayout's wrapper; without it
+    // any wide descendant sets the page's minimum width.
+    <div className="w-full min-w-0">
       <Meteors number={isMobile ? 30 : 100} />
       <section id="home" className="relative min-h-[90vh] w-screen">
         {/* Fades to transparent (not to a color) so the page's hex texture

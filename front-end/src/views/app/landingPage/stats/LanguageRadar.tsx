@@ -37,8 +37,8 @@ export const LanguageRadar: FC<{ languages: IStatLanguage[] }> = ({ languages })
   }));
 
   return (
-    <ChartContainer config={chartConfig} className="mx-auto aspect-square max-h-72 w-full">
-      <RadarChart data={data} outerRadius="70%">
+    <ChartContainer config={chartConfig} className="mx-auto aspect-square max-h-72 w-full min-w-0">
+      <RadarChart data={data} outerRadius="65%">
         <PolarGrid stroke="var(--green-darker)" strokeOpacity={0.6} />
         <PolarAngleAxis
           dataKey="language"

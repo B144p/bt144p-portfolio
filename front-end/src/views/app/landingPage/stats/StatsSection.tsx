@@ -2,6 +2,7 @@
 
 import { FC, ReactNode, useMemo } from "react";
 import { SkeletonLines } from "@/components/SkeletonLines";
+import { cn } from "@/lib/utils";
 import { useStatistic, type IStatistic } from "@/features/statistic/client";
 import { ContributionChart } from "./ContributionChart";
 import { formatDay, formatHours } from "./format";
@@ -14,12 +15,19 @@ const TOP_LANGUAGES = 6;
 /** Validated categorical slots (globals.css); anything beyond folds into "Other". */
 const OS_COLORS = ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)"];
 
-const CARD_CLASSNAME = "rounded-xl border border-green-dark/30 bg-nav-background/40 p-4 sm:p-6";
+// min-w-0: grid/flex children default to min-width:auto, so a chart's
+// measured SVG width would keep the column from ever shrinking on resize.
+const CARD_CLASSNAME =
+  "min-w-0 rounded-xl border border-green-dark/30 bg-nav-background/40 p-3 sm:p-6";
 
-const StatTile: FC<{ label: string; value: ReactNode }> = ({ label, value }) => (
-  <div className={CARD_CLASSNAME}>
+const StatTile: FC<{ label: string; value: ReactNode; className?: string }> = ({
+  label,
+  value,
+  className,
+}) => (
+  <div className={cn(CARD_CLASSNAME, className)}>
     <p className="text-xs text-secondary-text">{label}</p>
-    <p className="mt-1 text-xl text-bright-text tabular-nums">{value}</p>
+    <p className="mt-1 text-lg break-words text-bright-text tabular-nums sm:text-xl">{value}</p>
   </div>
 );
 
@@ -73,24 +81,25 @@ const StatsSection: FC = () => {
   const lastContribution = statistic.contributions.at(-1)?.date;
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex min-w-0 flex-col gap-3 sm:gap-4">
       <h1 className="mb-2 text-center text-[2rem]">Statistics</h1>
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         <StatTile label="Total time" value={formatHours(statistic.totalSeconds)} />
         <StatTile label="Daily average" value={formatHours(statistic.totalSeconds / days)} />
         <StatTile label="Top language" value={topLanguages[0]?.language ?? "-"} />
         <StatTile
           label="Range"
+          className="col-span-2 lg:col-span-1"
           value={
-            <span className="text-base">
+            <span className="text-sm sm:text-base">
               {formatDay(statistic.startDate)} – {formatDay(statistic.endDate)}
             </span>
           }
         />
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2">
         <div className={CARD_CLASSNAME}>
           <h2 className="text-xl text-bright-text">Languages</h2>
           <LanguageRadar languages={topLanguages} />

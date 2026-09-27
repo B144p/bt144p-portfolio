@@ -107,7 +107,10 @@ export const ContributionChart: FC<Props> = ({ contributions, until }) => {
         <p className="text-sm text-primary-text">{formatHours(total)} logged in the last year</p>
       </div>
 
-      <div ref={scrollRef} className="overflow-x-auto pb-1">
+      {/* contain-inline-size: the 53-week grid is ~830px wide; without this its
+          width leaks into every ancestor's min-content and widens the page on
+          phones instead of scrolling here. */}
+      <div ref={scrollRef} className="overflow-x-auto pb-1 [contain:inline-size]">
         <div
           role="img"
           aria-label={`Daily coding activity heatmap, ${formatHours(total)} in the last year`}
