@@ -2,15 +2,18 @@
 
 import { Plugs } from "@phosphor-icons/react";
 import React from "react";
-import type { IProjectSource } from "@/features/project/client";
+import type { IProjectSource, TProjectStatus } from "@/features/project/client";
 import { BugIcon } from "@/components/icons/BugIcon";
 import { cn } from "@/lib/utils";
+import { PROJECT_STATUS } from "@/utils/projectStatus";
 
 type Props = {
   title: string;
   detail: string;
   tagList: string[];
-  statusLabel?: string | null;
+  status: TProjectStatus;
+  /** Whether clicking the card opens something (preview or first source) */
+  clickable: boolean;
   sources?: IProjectSource[];
 };
 
@@ -21,10 +24,11 @@ const ProjectCard: React.FC<Props> = ({
   title,
   detail,
   tagList,
-  statusLabel,
+  status,
+  clickable,
   sources = [],
 }) => {
-  const upcoming = Boolean(statusLabel);
+  const statusBadge = PROJECT_STATUS[status];
 
   return (
     <div
@@ -35,16 +39,21 @@ const ProjectCard: React.FC<Props> = ({
       <div
         className={cn(
           "relative flex aspect-3/2 w-full items-center justify-center rounded-lg bg-card text-[3rem]",
-          upcoming ? "cursor-not-allowed" : "cursor-pointer",
+          clickable && "cursor-pointer",
         )}
       >
-        {upcoming && (
-          <div className="absolute inset-0 rounded-lg backdrop-blur-sm" />
-        )}
         <BugIcon />
-        {statusLabel && (
-          <span className="absolute text-[2rem]">{statusLabel}</span>
-        )}
+        {/* Nowhere to go: blur the preview. The badge comes after it in the
+            DOM, so it stays sharp on top. */}
+        {!clickable && <div className="absolute inset-0 rounded-lg backdrop-blur-sm" />}
+        <span className="absolute right-2 bottom-2 flex items-center gap-1.5 rounded-full border border-white/10 bg-nav-background/90 px-2 py-0.5 font-[Montserrat] text-[0.7rem] font-bold text-bright-text">
+          <span
+            aria-hidden
+            className="size-2 rounded-full"
+            style={{ background: statusBadge.color }}
+          />
+          {statusBadge.label}
+        </span>
       </div>
       {/* items-start + shrink-0: as a stretched flex item the icon box would
           grow with a multi-line description and stop being square. */}
