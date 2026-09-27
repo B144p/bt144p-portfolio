@@ -2,17 +2,16 @@
 
 import {
   EnvelopeSimple,
+  Eye,
   GithubLogo,
   LinkSimple,
   LinkedinLogo,
   List,
-  Phone,
 } from "@phosphor-icons/react";
 import { FC, ReactNode, useEffect, useRef, useState } from "react";
 import { useBreakpoint } from "../components/BreakpointComp";
 import { BugIcon } from "../components/icons/BugIcon";
 import { Button } from "@/components/ui/button";
-import { FloatButtonGroup } from "@/components/ui/float-button-group";
 import {
   Sheet,
   SheetContent,
@@ -20,12 +19,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { EBreakpoints } from "../utils/breakpoint";
 import { copyTextClipboard, openNewTabURL } from "../utils/functions";
 import { useContacts, type IContact } from "@/features/contact/client";
@@ -53,7 +47,11 @@ const getContactConfig = (contact: IContact) => {
   if (t.includes("github"))
     return { icon: <GithubLogo />, action: () => openNewTabURL(contact.url) };
   if (t.includes("email") || t.includes("mail"))
-    return { icon: <EnvelopeSimple />, action: () => copyTextClipboard(contact.url) };
+    return {
+      icon: <EnvelopeSimple />,
+      action: () => copyTextClipboard(contact.url),
+      copies: true,
+    };
   return { icon: <LinkSimple />, action: () => openNewTabURL(contact.url) };
 };
 
@@ -61,6 +59,7 @@ const BaseLayout: FC<BaseLayoutProps> = ({ children }) => {
   const navbarRef = useRef<HTMLDivElement>(null);
   const [prevScrollPos, setPrevScrollPos] = useState(0);
   const [sideBarOpen, setSideBarOpen] = useState(false);
+  const [emailCopied, setEmailCopied] = useState(false);
   const isMobile = useBreakpoint("<=", EBreakpoints.sm);
 
   const { data: contacts = [] } = useContacts();
@@ -157,36 +156,61 @@ const BaseLayout: FC<BaseLayoutProps> = ({ children }) => {
           {children}
         </div>
         <footer
-          className="flex justify-center bg-nav-background text-center text-bright-text shadow-[0_0_1rem_0.5rem_color-mix(in_oklab,var(--bright-text)_6%,transparent)]"
           id="footer"
+          className="relative mt-16 border-t border-green-dark/50 bg-nav-background/60 pt-14 pb-6 backdrop-blur-md"
         >
-          <div className="flex w-[calc(100%-10rem)] items-center justify-center sm:justify-between">
-            BT_144p © 2024{siteViews !== undefined && ` · ${siteViews.toLocaleString("en-US")} views`}
-            <div className="hidden gap-4 text-[2rem] sm:flex">
+          {/* Hexagon badge (same shape as the tab icon) straddling the top border */}
+          <div
+            aria-hidden
+            className="absolute top-0 left-1/2 grid size-16 -translate-x-1/2 -translate-y-1/2 place-items-center"
+          >
+            <svg viewBox="0 0 64 64" className="absolute inset-0 size-full">
+              <path
+                d="M32 3 57 17.5v29L32 61 7 46.5v-29Z"
+                className="fill-nav-background stroke-green-light"
+                strokeWidth={3}
+                strokeLinejoin="round"
+              />
+            </svg>
+            <BugIcon className="relative text-2xl text-bright-text" />
+          </div>
+          <div className="mx-auto flex w-[min(100%_-_2rem,1000px)] flex-col items-center gap-5 text-center">
+            <p className="text-sm text-primary-text">
+              Thanks for stopping by, let&apos;s build something.
+            </p>
+            <div className="flex flex-wrap justify-center gap-2">
               {contactButtons.map((contact) => (
-                <Tooltip key={contact.title}>
-                  <TooltipTrigger
-                    render={<span className="cursor-pointer" onClick={contact.action} />}
-                  >
-                    {contact.icon}
-                  </TooltipTrigger>
-                  <TooltipContent>{contact.title}</TooltipContent>
-                </Tooltip>
+                <Button
+                  key={contact.title}
+                  variant="ghost"
+                  className="h-auto gap-2 rounded-full border-green-dark/50 px-4 py-2 text-sm font-normal text-primary-text hover:bg-green-light/20 hover:text-bright-text [&_svg:not([class*='size-'])]:size-5"
+                  onClick={async () => {
+                    await contact.action();
+                    if (contact.copies) {
+                      setEmailCopied(true);
+                      setTimeout(() => setEmailCopied(false), 2000);
+                    }
+                  }}
+                >
+                  {contact.icon}
+                  {contact.copies && emailCopied ? "Copied!" : contact.title}
+                </Button>
               ))}
             </div>
+            <p className="flex items-center gap-2 text-xs text-primary-text">
+              <span className="text-bright-text">BT_144p © {new Date().getFullYear()}</span>
+              {siteViews !== undefined && (
+                <>
+                  <span aria-hidden>·</span>
+                  <span className="flex items-center gap-1">
+                    <Eye className="size-3.5" />
+                    {siteViews.toLocaleString("en-US")} views
+                  </span>
+                </>
+              )}
+            </p>
           </div>
         </footer>
-
-        <div className="sm:hidden">
-          <FloatButtonGroup
-            trigger={<Phone />}
-            items={contactButtons.map((contact) => ({
-              key: contact.title,
-              icon: contact.icon,
-              onClick: contact.action,
-            }))}
-          />
-        </div>
       </div>
     </TooltipProvider>
   );
