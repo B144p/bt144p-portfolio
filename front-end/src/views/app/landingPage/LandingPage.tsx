@@ -12,7 +12,7 @@ import { Meteors } from "../../../components/Meteors";
 import { useBreakpoint } from "../../../components/BreakpointComp";
 
 const SECTION_CLASSNAME =
-  "min-h-[75vh] w-[min(100%_-_2rem,1000px)] leading-normal bg-background content-center";
+  "glass-panel min-h-[75vh] w-[min(100%_-_2rem,1000px)] scroll-mt-16 p-4 leading-normal content-center sm:p-8";
 
 const SectionDivider: FC = () => (
   <div className="mx-auto flex w-[min(100%_-_2rem,1000px)] items-center gap-4">
@@ -28,11 +28,14 @@ const LandingPage: FC = () => {
   return (
     <div>
       <Meteors number={isMobile ? 30 : 100} />
-      <section
-        id="home"
-        className="min-h-[90vh] w-screen bg-cover bg-center bg-no-repeat shadow-[inset_0_-7.5rem_7.5rem_0_var(--background)] max-md:bg-position-[30%_50%]"
-        style={{ backgroundImage: `url(${headerImg.src})` }}
-      >
+      <section id="home" className="relative min-h-[90vh] w-screen">
+        {/* Fades to transparent (not to a color) so the page's hex texture
+            shows through the bottom edge. */}
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat mask-[linear-gradient(to_bottom,black_65%,transparent)] max-md:bg-position-[30%_50%]"
+          style={{ backgroundImage: `url(${headerImg.src})` }}
+        />
         <div className="hero-text"></div>
         <div className="hero-img"></div>
       </section>

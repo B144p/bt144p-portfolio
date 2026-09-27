@@ -153,7 +153,7 @@ const BaseLayout: FC<BaseLayoutProps> = ({ children }) => {
           )}
         </div>
 
-        <div className="flex min-h-[120px] items-center justify-center bg-background leading-[120px]">
+        <div className="flex min-h-[120px] items-center justify-center leading-[120px]">
           {children}
         </div>
         <footer
