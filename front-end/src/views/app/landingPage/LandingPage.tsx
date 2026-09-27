@@ -1,10 +1,8 @@
 "use client";
 
 import { FC } from "react";
-import { Separator } from "@/components/ui/separator";
 import { EBreakpoints } from "../../../utils/breakpoint";
 import headerImg from "../../../assets/BG-1a2329.png";
-import { BugIcon } from "../../../components/icons/BugIcon";
 import AboutMeSection from "./about/AboutMeSection";
 import StatsSection from "./stats/StatsSection";
 import ProjectSection from "./project/ProjectSection";
@@ -12,15 +10,7 @@ import { Meteors } from "../../../components/Meteors";
 import { useBreakpoint } from "../../../components/BreakpointComp";
 
 const SECTION_CLASSNAME =
-  "glass-panel min-h-[75vh] w-[min(100%_-_2rem,1000px)] scroll-mt-16 p-4 leading-normal content-center sm:p-8";
-
-const SectionDivider: FC = () => (
-  <div className="mx-auto flex w-[min(100%_-_2rem,1000px)] items-center gap-4">
-    <Separator className="h-1 flex-1 rounded-full bg-primary-text" />
-    <BugIcon className="text-primary-text" />
-    <Separator className="h-1 flex-1 rounded-full bg-primary-text" />
-  </div>
-);
+  "glass-panel min-h-[75vh] w-[min(100%_-_2rem,1000px)] scroll-mt-20 px-4 py-8 leading-normal content-center sm:px-8";
 
 const LandingPage: FC = () => {
   const isMobile = useBreakpoint("<=", EBreakpoints.sm);
@@ -39,15 +29,13 @@ const LandingPage: FC = () => {
         <div className="hero-text"></div>
         <div className="hero-img"></div>
       </section>
-      <div className="flex flex-col items-center">
+      <div className="flex flex-col items-center gap-8">
         <section id="about" className={SECTION_CLASSNAME}>
           <AboutMeSection />
         </section>
-        <SectionDivider />
         <section id="stats" className={SECTION_CLASSNAME}>
           <StatsSection />
         </section>
-        <SectionDivider />
         <section id="project" className={SECTION_CLASSNAME}>
           <ProjectSection />
         </section>

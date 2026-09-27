@@ -101,7 +101,7 @@ const StatsSection: FC = () => {
 
   return (
     <div>
-      <h1 className="mb-4 ml-4 text-[2rem]">Statistics</h1>
+      <h1 className="mb-4 text-center text-[2rem]">Statistics</h1>
       {loading ? (
         <SkeletonLines rows={10} />
       ) : (
