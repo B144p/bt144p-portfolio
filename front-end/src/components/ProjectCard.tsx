@@ -46,13 +46,24 @@ const ProjectCard: React.FC<Props> = ({
           <span className="absolute text-[2rem]">{statusLabel}</span>
         )}
       </div>
-      <div className="mt-3 flex flex-row">
-        <div className="flex aspect-square w-9 items-center justify-center overflow-hidden rounded-[0.3125rem] bg-card text-base">
+      {/* items-start + shrink-0: as a stretched flex item the icon box would
+          grow with a multi-line description and stop being square. */}
+      <div className="mt-3 flex flex-row items-start">
+        <div className="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-[0.3125rem] bg-card text-base">
           <Plugs />
         </div>
-        <div className="ml-2 flex flex-col justify-center font-[Montserrat] text-bright-text">
+        <div className="ml-2 flex min-w-0 flex-col justify-center font-[Montserrat] text-bright-text">
           <div className="text-[0.9rem] font-bold">{title}</div>
-          <div className="text-[0.7rem]">{detail}</div>
+          {/* Two lines with ellipsis (min-h reserves both, so short ones don't
+              make a shorter card) keep cards the same height; the full
+              text shows on hover, like the tags. No hover on touch, so
+              phones always get the full text. */}
+          <div
+            title={detail}
+            className="line-clamp-2 min-h-[3em] text-[0.7rem] leading-[1.5] group-hover:line-clamp-none max-md:line-clamp-none"
+          >
+            {detail}
+          </div>
         </div>
       </div>
       <div
