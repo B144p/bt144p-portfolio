@@ -95,9 +95,32 @@ export const ContributionChart: FC<Props> = ({ contributions, until }) => {
   );
 
   // Oldest → newest left to right; on narrow screens open at the latest week.
+  // A one-shot scroll at mount can land before layout settles (fonts,
+  // hydration, rotation), so keep pinning to the end on every resize until
+  // the visitor scrolls the chart themselves.
   useEffect(() => {
     const el = scrollRef.current;
-    if (el) el.scrollLeft = el.scrollWidth;
+    if (!el) return;
+    let touched = false;
+    const toEnd = () => {
+      if (!touched) el.scrollLeft = el.scrollWidth;
+    };
+    const markTouched = () => {
+      touched = true;
+    };
+    toEnd();
+    const observer = new ResizeObserver(toEnd);
+    observer.observe(el);
+    if (el.firstElementChild) observer.observe(el.firstElementChild);
+    el.addEventListener("pointerdown", markTouched, { passive: true });
+    el.addEventListener("wheel", markTouched, { passive: true });
+    el.addEventListener("touchstart", markTouched, { passive: true });
+    return () => {
+      observer.disconnect();
+      el.removeEventListener("pointerdown", markTouched);
+      el.removeEventListener("wheel", markTouched);
+      el.removeEventListener("touchstart", markTouched);
+    };
   }, [weeks]);
 
   return (
