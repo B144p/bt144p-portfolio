@@ -19,7 +19,6 @@ const LandingPage: FC = () => {
     // min-w-0 w-full: this is a flex item of BaseLayout's wrapper; without it
     // any wide descendant sets the page's minimum width.
     <div className="w-full min-w-0">
-      <Meteors number={isMobile ? 30 : 100} />
       <section id="home" className="relative min-h-[90vh] w-screen">
         {/* Fades to transparent (not to a color) so the page's hex texture
             shows through the bottom edge. */}
@@ -31,6 +30,10 @@ const LandingPage: FC = () => {
         <div className="hero-text"></div>
         <div className="hero-img"></div>
       </section>
+      {/* After the hero on purpose: with no z-index, positioned layers paint in
+          DOM order, so this sits above the hero's absolute image layer but
+          below the glass panels that follow. */}
+      <Meteors number={isMobile ? 30 : 100} />
       <div className="flex flex-col items-center gap-8">
         <section id="about" className={SECTION_CLASSNAME}>
           <AboutMeSection />
