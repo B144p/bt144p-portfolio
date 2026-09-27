@@ -2,8 +2,8 @@
 
 import { fromUnix } from "../../../../utils/date";
 import { FC } from "react";
-import reactLogo from "../../../../assets/react.svg";
 import { Separator } from "@/components/ui/separator";
+import { HexBadge } from "@/components/HexBadge";
 import { SkeletonLines } from "@/components/SkeletonLines";
 import { Timeline } from "@/components/ui/timeline";
 import { colors } from "../../../../utils/colors";
@@ -49,7 +49,7 @@ const AboutMeSection: FC = () => {
                     </b>
                     <div className="flex justify-center">
                       <div className="flex w-1/6 items-center justify-center">
-                        <img src={reactLogo.src} alt="" />
+                        <HexBadge className="size-12" />
                       </div>
                       <div className="w-5/6">
                         <h2 className="m-0">
@@ -113,7 +113,7 @@ const AboutMeSection: FC = () => {
                     </b>
                     <div className="flex justify-center">
                       <div className="flex w-1/6 items-center justify-center">
-                        <img src={reactLogo.src} alt="" />
+                        <HexBadge className="size-12" />
                       </div>
                       <div className="w-5/6">
                         <h2 className="m-0">{exp.company}</h2>

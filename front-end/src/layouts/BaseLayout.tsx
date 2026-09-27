@@ -2,17 +2,17 @@
 
 import {
   EnvelopeSimple,
+  Eye,
   GithubLogo,
   LinkSimple,
   LinkedinLogo,
   List,
-  Phone,
 } from "@phosphor-icons/react";
-import { FC, ReactNode, useEffect, useRef, useState } from "react";
+import { FC, ReactNode, useState } from "react";
 import { useBreakpoint } from "../components/BreakpointComp";
 import { BugIcon } from "../components/icons/BugIcon";
+import { HexBadge } from "@/components/HexBadge";
 import { Button } from "@/components/ui/button";
-import { FloatButtonGroup } from "@/components/ui/float-button-group";
 import {
   Sheet,
   SheetContent,
@@ -20,12 +20,10 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { useActiveSection } from "@/hooks/useActiveSection";
+import { useHideOnScroll } from "@/hooks/useHideOnScroll";
+import { cn } from "@/lib/utils";
 import { EBreakpoints } from "../utils/breakpoint";
 import { copyTextClipboard, openNewTabURL } from "../utils/functions";
 import { useContacts, type IContact } from "@/features/contact/client";
@@ -45,6 +43,7 @@ const navBarElement = [
   { id: "project", title: "Project" },
   { id: "footer", title: "Contact" },
 ];
+const navIds = navBarElement.map((item) => item.id);
 
 const getContactConfig = (contact: IContact) => {
   const t = contact.title.toLowerCase();
@@ -53,15 +52,20 @@ const getContactConfig = (contact: IContact) => {
   if (t.includes("github"))
     return { icon: <GithubLogo />, action: () => openNewTabURL(contact.url) };
   if (t.includes("email") || t.includes("mail"))
-    return { icon: <EnvelopeSimple />, action: () => copyTextClipboard(contact.url) };
+    return {
+      icon: <EnvelopeSimple />,
+      action: () => copyTextClipboard(contact.url),
+      copies: true,
+    };
   return { icon: <LinkSimple />, action: () => openNewTabURL(contact.url) };
 };
 
 const BaseLayout: FC<BaseLayoutProps> = ({ children }) => {
-  const navbarRef = useRef<HTMLDivElement>(null);
-  const [prevScrollPos, setPrevScrollPos] = useState(0);
   const [sideBarOpen, setSideBarOpen] = useState(false);
+  const [emailCopied, setEmailCopied] = useState(false);
   const isMobile = useBreakpoint("<=", EBreakpoints.sm);
+  const navHidden = useHideOnScroll();
+  const activeSection = useActiveSection(navIds);
 
   const { data: contacts = [] } = useContacts();
   const contactButtons = contacts.map((c) => ({
@@ -74,21 +78,6 @@ const BaseLayout: FC<BaseLayoutProps> = ({ children }) => {
     (v) => v.key === FRONTEND_VERSION_KEY,
   )?.views;
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const element = navbarRef.current;
-      if (element) {
-        element.style.transform =
-          prevScrollPos > window.scrollY
-            ? "unset"
-            : "translateY(calc(-100% - 2px))";
-        setPrevScrollPos(window.scrollY);
-      }
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [prevScrollPos]);
-
   return (
     <TooltipProvider>
       <div className="min-h-screen overflow-hidden rounded-lg">
@@ -100,7 +89,10 @@ const BaseLayout: FC<BaseLayoutProps> = ({ children }) => {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="fixed top-8 right-8 z-20 rounded-full"
+                    className={cn(
+                      "fixed top-6 right-6 z-20 size-11 rounded-full border border-green-dark/40 bg-nav-background/80 backdrop-blur-md transition-transform duration-300 ease-out",
+                      navHidden && "-translate-y-24",
+                    )}
                   />
                 }
               >
@@ -127,66 +119,86 @@ const BaseLayout: FC<BaseLayoutProps> = ({ children }) => {
             </Sheet>
           ) : (
             <header
-              ref={navbarRef}
-              className="fixed z-10 flex w-screen justify-center bg-transparent transition-all duration-500 ease-in-out"
+              className={cn(
+                "fixed inset-x-0 top-4 z-10 flex justify-center transition-transform duration-300 ease-out",
+                navHidden && "-translate-y-[calc(100%+1rem)]",
+              )}
             >
-              <div className="flex w-[min(90%,800px)] skew-x-[20deg] cursor-pointer rounded-tl-2xl rounded-tr-2xl rounded-br-2xl rounded-bl-[2rem] bg-nav-background shadow-[0_0_2rem_var(--background)]">
+              <nav className="flex h-12 w-[min(90%,800px)] skew-x-[20deg] overflow-hidden rounded-tl-2xl rounded-tr-2xl rounded-br-2xl rounded-bl-[2rem] border border-green-dark/40 bg-nav-background/80 shadow-[0_0_2rem_var(--background)] backdrop-blur-md">
                 <a
-                  className="grow rounded-tl-2xl rounded-bl-[2rem] bg-green-light text-center text-bright-text"
-                  href="#"
+                  className="grid place-items-center bg-green-light px-6 text-bright-text transition-colors hover:bg-green-lighter"
+                  href="#home"
+                  aria-label="Back to top"
                 >
-                  <span className="inline-block -skew-x-[20deg]">
-                    <BugIcon />
-                  </span>
+                  <BugIcon className="-skew-x-[20deg] text-xl" />
                 </a>
-                {navBarElement.map((list) => (
+                {navBarElement.map((item) => (
                   <a
-                    className="grow-[2] text-center text-primary-text italic transition-all duration-300 ease-in-out last:hover:rounded-tr-2xl last:hover:rounded-br-2xl hover:border-l-4 hover:border-double hover:border-bright-text hover:bg-green-light hover:text-bright-text"
-                    href={"#" + list.id}
-                    key={"#" + list.id}
+                    className={cn(
+                      "grid grow place-items-center px-2 text-primary-text italic transition-colors duration-200 hover:bg-green-light/30 hover:text-bright-text",
+                      activeSection === item.id && "bg-green-light/20 text-bright-text",
+                    )}
+                    href={"#" + item.id}
+                    key={item.id}
+                    aria-current={activeSection === item.id ? "true" : undefined}
                   >
-                    <span className="inline-block -skew-x-[20deg]">{list.title}</span>
+                    <span className="-skew-x-[20deg]">{item.title}</span>
                   </a>
                 ))}
-              </div>
+              </nav>
             </header>
           )}
         </div>
 
-        <div className="flex min-h-[120px] items-center justify-center bg-background leading-[120px]">
+        <div className="flex min-h-[120px] items-center justify-center leading-[120px]">
           {children}
         </div>
         <footer
-          className="flex justify-center bg-nav-background text-center text-bright-text shadow-[0_0_1rem_0.5rem_color-mix(in_oklab,var(--bright-text)_6%,transparent)]"
           id="footer"
+          className="relative mt-16 border-t border-green-dark/50 bg-nav-background/60 pt-14 pb-6 backdrop-blur-md"
         >
-          <div className="flex w-[calc(100%-10rem)] items-center justify-center sm:justify-between">
-            BT_144p © 2024{siteViews !== undefined && ` · ${siteViews.toLocaleString("en-US")} views`}
-            <div className="hidden gap-4 text-[2rem] sm:flex">
+          <HexBadge className="absolute top-0 left-1/2 size-16 -translate-x-1/2 -translate-y-1/2" />
+          <div className="mx-auto flex w-[min(100%_-_2rem,1000px)] flex-col items-center gap-5 text-center">
+            <p className="text-sm text-primary-text">
+              Thanks for stopping by, let&apos;s build something.
+            </p>
+            <div className="flex flex-wrap justify-center gap-2">
               {contactButtons.map((contact) => (
-                <Tooltip key={contact.title}>
-                  <TooltipTrigger
-                    render={<span className="cursor-pointer" onClick={contact.action} />}
-                  >
-                    {contact.icon}
-                  </TooltipTrigger>
-                  <TooltipContent>{contact.title}</TooltipContent>
-                </Tooltip>
+                <Button
+                  key={contact.title}
+                  variant="ghost"
+                  className="h-auto gap-2 rounded-full border-green-dark/50 px-4 py-2 text-sm font-normal text-primary-text hover:bg-green-light/20 hover:text-bright-text [&_svg:not([class*='size-'])]:size-5"
+                  onClick={async () => {
+                    await contact.action();
+                    if (contact.copies) {
+                      setEmailCopied(true);
+                      setTimeout(() => setEmailCopied(false), 2000);
+                    }
+                  }}
+                >
+                  {contact.icon}
+                  {contact.copies && emailCopied ? "Copied!" : contact.title}
+                </Button>
               ))}
             </div>
+            <p className="flex items-center gap-2 text-xs text-primary-text">
+              {/* Clock read at render: server and browser can disagree around New
+                Year, which is harmless here, so don't flag it as a mismatch. */}
+              <span className="text-bright-text" suppressHydrationWarning>
+                BT_144p © {new Date().getFullYear()}
+              </span>
+              {siteViews !== undefined && (
+                <>
+                  <span aria-hidden>·</span>
+                  <span className="flex items-center gap-1">
+                    <Eye className="size-3.5" />
+                    {siteViews.toLocaleString("en-US")} views
+                  </span>
+                </>
+              )}
+            </p>
           </div>
         </footer>
-
-        <div className="sm:hidden">
-          <FloatButtonGroup
-            trigger={<Phone />}
-            items={contactButtons.map((contact) => ({
-              key: contact.title,
-              icon: contact.icon,
-              onClick: contact.action,
-            }))}
-          />
-        </div>
       </div>
     </TooltipProvider>
   );

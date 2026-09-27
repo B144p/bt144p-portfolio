@@ -2,15 +2,18 @@
 
 import { Plugs } from "@phosphor-icons/react";
 import React from "react";
-import type { IProjectSource } from "@/features/project/client";
+import type { IProjectSource, TProjectStatus } from "@/features/project/client";
 import { BugIcon } from "@/components/icons/BugIcon";
 import { cn } from "@/lib/utils";
+import { PROJECT_STATUS } from "@/utils/projectStatus";
 
 type Props = {
   title: string;
   detail: string;
   tagList: string[];
-  statusLabel?: string | null;
+  status: TProjectStatus;
+  /** Whether clicking the card opens something (preview or first source) */
+  clickable: boolean;
   sources?: IProjectSource[];
 };
 
@@ -21,10 +24,15 @@ const ProjectCard: React.FC<Props> = ({
   title,
   detail,
   tagList,
-  statusLabel,
+  status,
+  clickable,
   sources = [],
 }) => {
-  const upcoming = Boolean(statusLabel);
+  // Fallback: the API isn't validated, so a new status shouldn't crash the section.
+  const statusBadge = PROJECT_STATUS[status] ?? {
+    label: String(status),
+    color: "var(--secondary-text)",
+  };
 
   return (
     <div
@@ -35,24 +43,40 @@ const ProjectCard: React.FC<Props> = ({
       <div
         className={cn(
           "relative flex aspect-3/2 w-full items-center justify-center rounded-lg bg-card text-[3rem]",
-          upcoming ? "cursor-not-allowed" : "cursor-pointer",
+          clickable && "cursor-pointer",
         )}
       >
-        {upcoming && (
-          <div className="absolute inset-0 rounded-lg backdrop-blur-sm" />
-        )}
         <BugIcon />
-        {statusLabel && (
-          <span className="absolute text-[2rem]">{statusLabel}</span>
-        )}
+        {/* Nowhere to go: blur the preview. The badge comes after it in the
+            DOM, so it stays sharp on top. */}
+        {!clickable && <div className="absolute inset-0 rounded-lg backdrop-blur-sm" />}
+        <span className="absolute right-2 bottom-2 flex items-center gap-1.5 rounded-full border border-white/10 bg-nav-background/90 px-2 py-0.5 font-[Montserrat] text-[0.7rem] font-bold text-bright-text">
+          <span
+            aria-hidden
+            className="size-2 rounded-full"
+            style={{ background: statusBadge.color }}
+          />
+          {statusBadge.label}
+        </span>
       </div>
-      <div className="mt-3 flex flex-row">
-        <div className="flex aspect-square w-9 items-center justify-center overflow-hidden rounded-[0.3125rem] bg-card text-base">
+      {/* items-start + shrink-0: as a stretched flex item the icon box would
+          grow with a multi-line description and stop being square. */}
+      <div className="mt-3 flex flex-row items-start">
+        <div className="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-[0.3125rem] bg-card text-base">
           <Plugs />
         </div>
-        <div className="ml-2 flex flex-col justify-center font-[Montserrat] text-bright-text">
+        <div className="ml-2 flex min-w-0 flex-col justify-center font-[Montserrat] text-bright-text">
           <div className="text-[0.9rem] font-bold">{title}</div>
-          <div className="text-[0.7rem]">{detail}</div>
+          {/* Two lines with ellipsis (min-h reserves both, so short ones don't
+              make a shorter card) keep cards the same height; the full
+              text shows on hover, like the tags. No hover on touch, so
+              phones always get the full text. */}
+          <div
+            title={detail}
+            className="line-clamp-2 min-h-[3em] text-[0.7rem] leading-[1.5] group-hover:line-clamp-none max-md:line-clamp-none"
+          >
+            {detail}
+          </div>
         </div>
       </div>
       <div

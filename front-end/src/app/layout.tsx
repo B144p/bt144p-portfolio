@@ -1,5 +1,5 @@
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { Providers } from "@/components/providers";
 import { prefetchAboutMe } from "@/features/about-me/server";
@@ -15,6 +15,11 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "BT-144p: Portfolio",
+  description: "BT-144p's portfolio: about me, coding statistics and projects.",
+};
+
+export const viewport: Viewport = {
+  themeColor: "#1c242c",
 };
 
 export default async function RootLayout({

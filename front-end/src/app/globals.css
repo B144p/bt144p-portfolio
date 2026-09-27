@@ -105,6 +105,17 @@
   --border: var(--green-dark);
   --input: var(--green-dark);
   --ring: var(--green-lighter);
+
+  /* Categorical chart slots (OS donut). Validated with the dataviz
+     validator against --background in dark mode: all pairs pass CVD and
+     normal-vision separation. Keep this order; fold extras into "Other". */
+  --chart-1: #199e70;
+  --chart-2: #3987e5;
+  --chart-3: #d95926;
+  --chart-other: var(--secondary-text);
+
+  /* Page-wide hexagon texture (heropatterns "hexagons" tile, green-light) */
+  --hex-pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='49' viewBox='0 0 28 49'%3E%3Cpath fill='%23698b7b' fill-opacity='0.08' fill-rule='evenodd' d='M13.99 9.25l13 7.5v15l-13 7.5L1 31.75v-15l12.99-7.5zM3 17.9v12.7l10.99 6.34 11-6.35V17.9l-11-6.34L3 17.9zM0 15l12.98-7.5V0h-2v6.35L0 12.69v2.3zm0 18.5L12.98 41v8h-2v-6.85L0 35.81v-2.3zM15 0v7.5L27.99 15H28v-2.31h-.01L17 6.35V0h-2zm0 49v-8l12.99-7.5H28v2.31h-.01L17 42.15V49h-2z'/%3E%3C/svg%3E");
 }
 
 @layer base {
@@ -126,6 +137,16 @@
     @apply bg-background text-foreground;
     margin: 0;
   }
+  /* Fixed pseudo-element rather than background-attachment: fixed,
+     which iOS Safari ignores. Sits above body's color, below content. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background-image: var(--hex-pattern);
+    pointer-events: none;
+  }
   :focus-visible {
     outline: 1px solid var(--green-lighter);
     outline-offset: 2px;
@@ -146,5 +167,29 @@
   ::-webkit-scrollbar-thumb:hover {
     background: #353a44;
     box-shadow: inset 0 0 7px grey;
+  }
+}
+
+/* Frosted glass behind section content so text stays readable over the
+   hex texture (ported from port-oscilloscope's .monitor-chassis).
+   Blur is decorative — fallback is the opaque background color. */
+@layer components {
+  .glass-panel {
+    background: color-mix(in oklab, var(--background) 60%, transparent);
+    border: 1px solid color-mix(in oklab, var(--green-dark) 30%, transparent);
+    border-radius: var(--radius-2xl);
+    backdrop-filter: blur(10px) saturate(1.2);
+    -webkit-backdrop-filter: blur(10px) saturate(1.2);
+  }
+  @media (max-width: 767px) {
+    .glass-panel {
+      backdrop-filter: blur(6px) saturate(1.2);
+      -webkit-backdrop-filter: blur(6px) saturate(1.2);
+    }
+  }
+  @supports not (backdrop-filter: blur(1px)) {
+    .glass-panel {
+      background: var(--background);
+    }
   }
 }
